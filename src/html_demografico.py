@@ -5,6 +5,7 @@ import htmltools as ht
 import pathlib
 from math import floor
 import pdfkit
+import os
 
 # Functions
 
@@ -250,6 +251,11 @@ def generate_p4(graph_dict, start_item=6, subitem=3):
     
     return ordered_sections
 
+def checar_doc(pdf_file):
+    
+    return os.path.exists(pdf_file) and os.path.getsize(pdf_file)
+    
+
 # Gerando documentos
 
 def gerar_doc():
@@ -316,9 +322,7 @@ def gerar_doc():
     
     return arquivos_html, arquivos_txt
 
-def pdf_doc(arquivos):
-
-    pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+def pdf_doc(arquivos, pdf_file):
     
     pdfkit.from_string(arquivos, pdf_file, options={
                                                 "enable-local-file-access": True,
@@ -335,6 +339,8 @@ def pdf_doc(arquivos):
                                                   'disable-smart-shrinking': None,
                                                 #   'zoom':'1.24'
                                                   })
+    
+    return checar_doc(pdf_file)
 
 if __name__ == '__main__':
     html_files, html_txt = gerar_doc()

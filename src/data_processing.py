@@ -64,13 +64,21 @@ sigla_area = 'CL-33'
 gerar_graficos = True
 gerar_mapas = True
 
+mapa_hierarquia_defesa = pd.read_csv("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_hierarquia_defesa.csv", encoding='latin-1')
+ficha_areas_casas = pd.read_csv('/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/ficha_areas_casas.csv', encoding='latin-1')
 
-area_cadastro = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/area_cadastro-2.xlsx")
-casa = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/casa.xlsx")
-ficha = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/ficha.xlsx")
-hierarquia = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/hierarquia.xlsx")
-mapa_areas = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_areas_hidro_geo-2.xlsx")
-base_defesa = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/gh_nova_base.xlsx")
+nome_area = nome_area_risco.upper()
+
+# selecting data from specific area
+dados_fichas_uma_area = ficha_areas_casas[ficha_areas_casas['RG_RISCO'] == nome_area]
+mapa_uma_area = mapa_hierarquia_defesa[mapa_hierarquia_defesa['RHD_NOME']==nome_area]
+
+# area_cadastro = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/area_cadastro-2.xlsx")
+# casa = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/casa.xlsx")
+# ficha = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/ficha.xlsx")
+# hierarquia = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/hierarquia.xlsx")
+# mapa_areas = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_areas_hidro_geo-2.xlsx")
+# base_defesa = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/gh_nova_base.xlsx")
 
 # fixed images
 logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
@@ -78,29 +86,32 @@ logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outp
 
 # path to save images
 save_images = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images'
+# path to save pdf
+pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
 
 colours = pd.Series({'R1':'#4FC26A','R2':'#F0E113','R3':'#FF8801','R4':'#BF243C'})
 colours.name = 'colours'
 
-nome_area = nome_area_risco.upper()
+
 
 # processing tables
-dados_fichas_areas = ficha.merge(area_cadastro,left_on='ID_AREA_FICHA', right_on='ID_CAD_AREA') # juntar dados das areas associadas as fichas
-areas_fichas_casas = dados_fichas_areas.merge(casa, right_on='ID_CSA', left_on='ID_CSA_FICHA')
-areas_fichas_casas = areas_fichas_casas.replace([r'\s*SIM\s*',r'\s*N[AÃ]O\s*'], ['SIM', 'NÃO'], regex=True)
+# dados_fichas_areas = ficha.merge(area_cadastro,left_on='ID_AREA_FICHA', right_on='ID_CAD_AREA') # juntar dados das areas associadas as fichas
+# areas_fichas_casas = dados_fichas_areas.merge(casa, right_on='ID_CSA', left_on='ID_CSA_FICHA')
+# areas_fichas_casas = areas_fichas_casas.replace([r'\s*SIM\s*',r'\s*N[AÃ]O\s*'], ['SIM', 'NÃO'], regex=True)
 
-# selecting data from specific area
-dados_fichas_uma_area = dados_fichas_areas[dados_fichas_areas['RG_RISCO'] == nome_area]
-mapa_uma_area = mapa_areas[mapa_areas['RHD_NOME']==nome_area]
+dados_fichas_uma_area = dados_fichas_uma_area.replace([r'\s*SIM\s*',r'\s*N[AÃ]O\s*'], ['SIM', 'NÃO'], regex=True)
+
+
+
 
 ############################################################################################
 # MAPS
 
 # Get data for maps of area
 new_gdf = auto_maps.process_map_data(mapa_uma_area)
-geometria_fichas = dados_fichas_areas.merge(new_gdf, left_on='SETOR', right_on='RHD_SETOR') #todas as fichas
+geometria_fichas = dados_fichas_uma_area.merge(new_gdf, left_on='SETOR', right_on='RHD_SETOR') #todas as fichas
 # Crianças
-df_area = areas_fichas_casas[areas_fichas_casas['RG_RISCO']==nome_area]
+df_area = dados_fichas_uma_area
 df_criancas_area = df_area[(~df_area['CRIANCA_CSA'].isna()) & (df_area['CRIANCA_CSA']!=0)]
 geometria_criancas = df_criancas_area.merge(new_gdf[['COR', 'RHD_SETOR']], left_on='SETOR', right_on='RHD_SETOR')
 # Idosos
@@ -132,7 +143,7 @@ mapa_problemas = auto_maps.generate_points_mapa(new_gdf, geometria_probl, f'{sav
 ################################################################################################
 # GRAPHS
 
-areas_fichas_casas_uma_area = areas_fichas_casas[areas_fichas_casas['RG_RISCO'] == nome_area]
+areas_fichas_casas_uma_area = dados_fichas_uma_area
 areas_fichas_casas_uma_area = areas_fichas_casas_uma_area.fillna('NÃO DISPONÍVEL')
 # dados_fichas_uma_area = dados_fichas_uma_area.fillna('NÃO DISPONÍVEL')
 
@@ -188,28 +199,28 @@ grafico_problemas = auto_graphs.graph_percentages(probl_csa, 'Há riscos estrutu
 ################################################################################################
 # OTHER DATA
 
-subprefeitura = hierarquia[hierarquia['NOME'] == nome_area].iat[0,2]
-hierarquia_area = hierarquia[hierarquia['NOME'] == nome_area].iat[0,0]
-data_censo_inicial = dados_fichas_uma_area['DT_FICHA_DATE'].min().date().strftime('%d/%m/%Y') # ver de onde pegar esse
-data_censo_final = dados_fichas_uma_area['DT_FICHA_DATE'].max().date().strftime('%d/%m/%Y') # ver de onde pegar esse
+subprefeitura = mapa_uma_area.iat[0,10]
+hierarquia_area = int(mapa_uma_area.iat[0,9])
+data_censo_inicial = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).min().date().strftime('%d/%m/%Y') # ver de onde pegar esse
+data_censo_final = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).max().date().strftime('%d/%m/%Y') # ver de onde pegar esse
 
-moradias_fdte = dados_fichas_areas[dados_fichas_areas.RG_RISCO == nome_area]['ID_FICHA'].count()
-moradias_defesa = base_defesa[base_defesa['area'] == nome_area]['moradias'].iat[0]
+moradias_fdte = dados_fichas_uma_area['ID_FICHA'].count()
+moradias_defesa = mapa_uma_area['N_MORADIAS'].iat[0]
 moradias_r1 = get_moradias(dados_risco_moradias, 'R1')
 moradias_r2 = get_moradias(dados_risco_moradias, 'R2')
 moradias_r3 = get_moradias(dados_risco_moradias, 'R3')
 moradias_r4 = get_moradias(dados_risco_moradias, 'R4')
-moradores_r1 = get_moradores(areas_fichas_casas, nome_area, 'R1')
-moradores_r2 = get_moradores(areas_fichas_casas, nome_area, 'R2')
-moradores_r3 = get_moradores(areas_fichas_casas, nome_area, 'R3')
-moradores_r4 = get_moradores(areas_fichas_casas, nome_area, 'R4')
+moradores_r1 = get_moradores(dados_fichas_uma_area, nome_area, 'R1')
+moradores_r2 = get_moradores(dados_fichas_uma_area, nome_area, 'R2')
+moradores_r3 = get_moradores(dados_fichas_uma_area, nome_area, 'R3')
+moradores_r4 = get_moradores(dados_fichas_uma_area, nome_area, 'R4')
 total_moradores = moradores_r1+moradores_r2+moradores_r3+moradores_r4
-total_familias = get_familias(areas_fichas_casas, nome_area)
-total_criancas = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == nome_area)]['CRIANCA_CSA'].sum()
-total_idosos = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == nome_area)]['IDOSO_CSA'].sum()
-total_pcds = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == nome_area)]['PCD_CSA'].sum()
-fichas_sem_id = dados_fichas_areas[(dados_fichas_areas['RG_RISCO'] == nome_area)]['ID_ENTREVISTADO_FICHA'].isna().sum() + \
-                dados_fichas_areas[(dados_fichas_areas['RG_RISCO'] == nome_area)]['ID_CSA_FICHA'].isna().sum()
+total_familias = get_familias(dados_fichas_uma_area, nome_area)
+total_criancas = dados_fichas_uma_area['CRIANCA_CSA'].sum()
+total_idosos = dados_fichas_uma_area['IDOSO_CSA'].sum()
+total_pcds = dados_fichas_uma_area['PCD_CSA'].sum()
+fichas_sem_id = dados_fichas_uma_area['ID_ENTREVISTADO_FICHA'].isna().sum() + \
+                dados_fichas_uma_area['ID_CSA_FICHA'].isna().sum()
 
 # Generating text data
 numeros = ['um', 'dois', 'tres', 'quatro']
