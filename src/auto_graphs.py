@@ -15,18 +15,20 @@ def define_text_color(patch):
     
     return c
 
-def add_bar_labels(ax, labels, pad=-30):
+def add_bar_labels(ax, labels):
+    
+    max = np.max([rect.get_height() for rect in ax.patches])
     
     for i, rect in enumerate(ax.patches):
         
         c = define_text_color(rect)
             
         bar_height = rect.get_height()
-        if bar_height < 40:
-            n_pad=2
+        if bar_height < (0.12*max):
+            n_pad=0.035*max
             c='black'
         else:
-            n_pad = pad
+            n_pad = -(0.08*max)
         
         ax.text(rect.get_x() + rect.get_width()/2, bar_height+n_pad, labels[i], ha='center', va='baseline', color = c, fontsize=12)
 
@@ -35,6 +37,7 @@ def generate_donut_graph(dados):
     sns.set_palette('Set2')
     fig, ax = plt.subplots(subplot_kw=dict(aspect="equal"))
     percentagem = dados/dados.sum()*100
+
     wedges, text1 = plt.pie(dados, wedgeprops=dict(width=0.5), startangle=45)
     plt.legend(dados.index, loc='right', bbox_to_anchor=(0, 0., 1.6, 1))
 
@@ -71,7 +74,7 @@ def graph_risco_moradias(dados, fig_path = 'risco_moradias.png', regenerate=True
     fig = plt.Figure(figsize=(10,5))
     ax = sns.barplot(dados, x='Risco', y='Quantidade de Moradias', hue='colours', palette=list(dados['colours']), legend=False)
     ax.set_title('Classificação de risco das moradias')
-    add_bar_labels(ax, dados['Quantidade de Moradias'], pad=-35)
+    add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
     ax.get_figure().clf()
@@ -89,7 +92,7 @@ def graph_setor_moradias(dados, fig_path = 'setor_moradias.png', regenerate=True
     ax.get_figure()
     ax.set_title('Quantidade de moradias por setor de risco')
     plt.xticks(rotation = 45, horizontalalignment='right')
-    add_bar_labels(ax, dados['Quantidade de Moradias'], pad=-35)
+    add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
     ax.get_figure().clf()
@@ -106,10 +109,9 @@ def graph_n_pavimentos(dados, fig_path = 'pav_imoveis.png', regenerate=True):
     ax = sns.barplot(dados, x='Número de pavimentos', y='Quantidade de Moradias')
     ax.set_title('Quantidade de pavimentos')
     # ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-    print(dados['Número de pavimentos'])
     ax.set_xticklabels([f'{num:.0f}' for num in dados['Número de pavimentos'][:-1]]+[dados['Número de pavimentos'].values[-1]])
     # plt.xticks(rotation = 45, horizontalalignment='right')
-    add_bar_labels(ax, dados['Quantidade de Moradias'], pad=-35)
+    add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path, bbox_inches='tight')
     ax.get_figure().clf()

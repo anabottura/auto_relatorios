@@ -123,7 +123,7 @@ def generate_p0(nome_area_risco, sigla_area):
     
     return capa
 
-def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_inicial, data_censo_final, mapa_setores):
+def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_inicial, data_censo_final, mapa_setores, texto_carac_area):
     
     # criar estilos
     estilos_pagina = ht.tags.style(".texto_geral {font-size:3.5mm;} h1 {font-size:4mm; padding-top:5mm;}")
@@ -152,7 +152,7 @@ def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_ini
     
     return conteudo
 
-def generate_p2(risco_df, grafico_moradias_risco):
+def generate_p2(moradias_defesa, moradias_fdte, total_moradores, total_criancas, total_idosos, total_pcds, risco_df, grafico_moradias_risco, mapa_moradias):
     
     # criar estilos
     estilos_pagina = ht.tags.style(".texto_geral {font-size:3.5mm;} \
@@ -258,7 +258,7 @@ def checar_doc(pdf_file):
 
 # Gerando documentos
 
-def gerar_doc():
+def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados):
     """
     Função que gera o arquivo html
     """
@@ -272,39 +272,48 @@ def gerar_doc():
                         'sigla_area':sigla_area,
                         'logo_sp':logo_sp,
                         'logo_fdte':logo_fdte}
-
-    ## Gerando tabela com numero de moradores e moradias em cada risco
-
-    risco_df_moradias = {'R1': moradias_r1,'R2': moradias_r2,'R3': moradias_r3,'R4': moradias_r4}
-    risco_df_moradores = {'R1': moradores_r1,'R2': moradores_r2,'R3': moradores_r3,'R4': moradores_r4}
-    risco_df = pd.DataFrame({'Moradias': risco_df_moradias, 'Habitantes': risco_df_moradores})
-
     
     conteudo = []
     conteudo.append(generate_p0(nome_area_risco, sigla_area))
-    conteudo.append(generate_p1(nome_area_risco, sigla_area, subprefeitura, hierarquia_area, data_censo_inicial, data_censo_final, mapa_setores))
-    conteudo.append(generate_p2(risco_df, grafico_moradias_risco))
     
-    graphs_p3 = {"Quantificação de moradias por setor de risco":grafico_moradias_setor,
-              "Tipo de uso dos imóveis": grafico_uso_imoveis}
+    conteudo.append(generate_p1(nome_area_risco, sigla_area,
+                                dados['subprefeitura'],
+                                dados['hierarquia_area'],
+                                dados['data_censo_inicial'],
+                                dados['data_censo_final'],
+                                mapas['setores'],
+                                dados['texto_carac_area']))
     
-    graphs_p4 = {"Tipologia das construções": grafico_tipo_construcao,
-                 "Quantidade de pavimentos": grafico_n_pavimentos}
-    graphs_p5 =  {"Nível do acabamento das moradias": grafico_acabamento_moradias,
-                 "Tipo de pisos": grafico_pisos}
+    conteudo.append(generate_p2(dados['moradias_defesa'],
+                                dados['moradias_fdte'],
+                                dados['total_moradores'],
+                                dados['total_criancas'],
+                                dados['total_idosos'],
+                                dados['total_pcds'],
+                                dados['risco_df'],
+                                graficos['moradias_risco'],
+                                mapas['moradias']))
     
-    graphs_p6 = {"Tipo de coberturas": grafico_cobertura,
-                 "Problemas estruturais": grafico_problemas}
+    graphs_p3 = {"Quantificação de moradias por setor de risco":graficos['moradias_setor'],
+              "Tipo de uso dos imóveis": graficos['uso_imoveis']}
+    
+    graphs_p4 = {"Tipologia das construções": graficos['tipo_construcao'],
+                 "Quantidade de pavimentos": graficos['n_pavimentos']}
+    graphs_p5 =  {"Nível do acabamento das moradias": graficos['acabamento_moradias'],
+                 "Tipo de pisos": graficos['pisos']}
+    
+    graphs_p6 = {"Tipo de coberturas": graficos['cobertura'],
+                 "Problemas estruturais": graficos['problemas']}
     
     conteudo.append(generate_p3(graphs_p3))
     conteudo.append(generate_p4(graphs_p4))
     conteudo.append(generate_p4(graphs_p5, subitem=5))
     conteudo.append(generate_p4(graphs_p6, subitem=7))
     
-    maps_p7 = {"Problemas estruturais": mapa_problemas,
-               "Crianças": mapa_criancas}
-    maps_p8 = {"Idosos": mapa_idosos,
-               "PCDs": mapa_pcds}
+    maps_p7 = {"Problemas estruturais": mapas['problemas'],
+               "Crianças": mapas['criancas']}
+    maps_p8 = {"Idosos": mapas['idosos'],
+               "PCDs": mapas['pcds']}
     
     conteudo.append(generate_p3(maps_p7, title = 'Espacialização dos indicadores', start_item=7))
     conteudo.append(generate_p4(maps_p8, start_item=7))
@@ -314,10 +323,10 @@ def gerar_doc():
     for i, page in enumerate(conteudo):
         arquivo = generate_page(page, header_footer_info, d_height_mm, d_width_mm)
     
-        nome_arquivo = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}_{i}.html'
-        arquivo.save_html(nome_arquivo)
+        # nome_arquivo = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}_{i}.html'
+        # arquivo.save_html(nome_arquivo)
         arquivo_final_txt = str(arquivo)
-        arquivos_html.append(nome_arquivo)
+        # arquivos_html.append(nome_arquivo)
         arquivos_txt+=(arquivo_final_txt)
     
     return arquivos_html, arquivos_txt
@@ -343,5 +352,19 @@ def pdf_doc(arquivos, pdf_file):
     return checar_doc(pdf_file)
 
 if __name__ == '__main__':
-    html_files, html_txt = gerar_doc()
-    pdf_doc(html_txt)
+    
+    nome_area_risco = 'Jardim das Maravilhas I' #'Morro da Lua' 
+    sigla_area = 'CT-03' #'CL-33'
+    nome_area = nome_area_risco.upper()
+    
+    # fixed images
+    logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    
+    # path to save pdf
+    pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+    
+    mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
+    html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
+    
+    pdf_doc(html_txt, pdf_file)
