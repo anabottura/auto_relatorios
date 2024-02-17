@@ -6,6 +6,8 @@ import pathlib
 from math import floor
 import pdfkit
 import os
+from rel_a_fazer import *
+from unidecode import unidecode
 
 # Functions
 
@@ -139,7 +141,7 @@ def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_ini
     ordered_sections = ht.tags.ol(style='width:180mm; padding: 0 0 0 5mm; margin: 0')
     
     item1 = ht.tags.li(ht.tags.h1("Localização da Área e setores de risco"),
-                        ht.tags.div(ht.tags.img(src=pathlib.Path(mapa_setores).as_uri(), alt='Mapa da área', style='width:160mm; height:80mm; frameborder:0'), style='text-align:center;'),
+                        ht.tags.div(ht.tags.img(src=pathlib.Path(mapa_setores).as_uri(), alt='Mapa da área', style='width:128mm; height:80mm; frameborder:0'), style='text-align:center;'),
                         style="width:175mm;font-size:4mm;")
     
     item2 = ht.tags.li(ht.tags.h1("Caracterização da área"),
@@ -353,18 +355,23 @@ def pdf_doc(arquivos, pdf_file):
 
 if __name__ == '__main__':
     
-    nome_area_risco = 'Jardim das Maravilhas I' #'Morro da Lua' 
-    sigla_area = 'CT-03' #'CL-33'
-    nome_area = nome_area_risco.upper()
-    
     # fixed images
     logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
     logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
     
-    # path to save pdf
-    pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+    for nome_area_risco, sigla_area in rel_a_fazer.items():
+        # nome_area_risco = 'Fazenda da Juta III' #'Morro da Lua' 
+        # sigla_area = 'HSB-07' #'CL-33'
+        print(f'Gerando relatório da área {sigla_area} - {nome_area_risco}')
+        nome_area = unidecode(nome_area_risco.upper())
     
-    mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
-    html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
-    
-    pdf_doc(html_txt, pdf_file)
+        # path to save pdf
+        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}.pdf'
+        
+        mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
+        if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
+            print(f'Não foi possível gerar relatório para {nome_area}')
+            continue
+        html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
+        
+        pdf_doc(html_txt, pdf_file)

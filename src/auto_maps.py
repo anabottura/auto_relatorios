@@ -11,6 +11,16 @@ from pyppeteer import launch
 import nest_asyncio
 import os
 
+def define_text_color(hex_color):
+    
+    rgb = tuple(int(hex_color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
+    color_thr = (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114)
+    
+    if color_thr > 150:
+        c = 'black'
+    else:
+        c = 'white' 
+    return c
 
 def plot_setores_in_map(gdf, map):
     """Given a GeoDataFrame with a column named 'GEOMETRIA' and rows that represent Setores, add the polygons to map
@@ -119,7 +129,7 @@ def html_to_png(html_file, png_file):
         page = await browser.newPage()
         
         await page.goto(url)
-        await page.screenshot({'path': png_path, 'width':2880, 'height':1800}, clip={'x':0, 'y':100, 'width':1440, 'height':700})
+        await page.screenshot({'path': png_path, 'width':2880, 'height':1800}, clip={'x':0, 'y':0, 'width':1440, 'height':900})
         
         await browser.close()
 
@@ -176,7 +186,7 @@ def generate_mapa_setores(new_gdf, map_path = 'mapa_setores', regenerate=True):
         
         if inside_points:
             max_distance_point = max(inside_points, key=lambda p: r['geometry'].boundary.distance(p))
-            folium.Marker(location = [max_distance_point.y, max_distance_point.x], icon=folium.DivIcon(icon_size=(5,5), icon_anchor=(10,10),html=f'<div style="font-size:14pt; font-color:black; font-weight:bold">{r["RHD_GRAU"]}</div>')).add_to(geo_j)
+            folium.Marker(location = [max_distance_point.y, max_distance_point.x], icon=folium.DivIcon(icon_size=(5,5), icon_anchor=(10,10), html=f'<div style="font-size:16pt; color:{define_text_color(cor)}; font-weight:bold">{r["RHD_GRAU"]}</div>')).add_to(geo_j)
         geo_j.add_to(my_map)
 
     my_map.save(f'{map_path}.html')

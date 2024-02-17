@@ -2,13 +2,16 @@ import pandas as pd
 import auto_graphs
 import auto_maps
 import requests
+from unidecode import unidecode
 
 # Functions
 
-def get_moradores(areas_fichas_casas, a_risco, grau_risco):
-    if grau_risco in areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == a_risco)]['CLASS_AREA'].unique():
-        moradores_resp_risco = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == a_risco)].groupby(['CLASS_AREA','ENTREVISTA_FICHA'], dropna=False)['QTDE_MORADORES_CSA'].sum()
-        entrevistas_resp_risco = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == a_risco)].groupby(['CLASS_AREA','ENTREVISTA_FICHA'], dropna=False)['ID_FICHA'].count()
+def get_moradores(areas_fichas_casas, grau_risco):
+    
+    areas_fichas_casas['ENTREVISTA_FICHA'] = areas_fichas_casas['ENTREVISTA_FICHA'].fillna('NÃO')
+    if grau_risco in areas_fichas_casas['CLASS_AREA'].unique():
+        moradores_resp_risco = areas_fichas_casas.groupby(['CLASS_AREA','ENTREVISTA_FICHA'], dropna=False)['QTDE_MORADORES_CSA'].sum()
+        entrevistas_resp_risco = areas_fichas_casas.groupby(['CLASS_AREA','ENTREVISTA_FICHA'], dropna=False)['ID_FICHA'].count()
         media_moradores_total = moradores_resp_risco.loc[:, 'SIM'].sum()/entrevistas_resp_risco.loc[:, 'SIM'].sum()
         if (grau_risco, 'SIM') in moradores_resp_risco.index:
             moradores_sim = moradores_resp_risco.loc[grau_risco, 'SIM']
@@ -27,10 +30,10 @@ def get_moradores(areas_fichas_casas, a_risco, grau_risco):
         total_moradores = 0
     return total_moradores
 
-def get_familias(areas_fichas_casas, a_risco):
+def get_familias(areas_fichas_casas):
     
-    familias_resp_risco = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == a_risco)].groupby(['ENTREVISTA_FICHA'], dropna=False)['QTDE_FAMILIAS_CSA'].sum()
-    entrevistas_resp_risco = areas_fichas_casas[(areas_fichas_casas['RG_RISCO'] == a_risco)].groupby(['ENTREVISTA_FICHA'], dropna=False)['ID_FICHA'].count()
+    familias_resp_risco = areas_fichas_casas.groupby(['ENTREVISTA_FICHA'], dropna=False)['QTDE_FAMILIAS_CSA'].sum()
+    entrevistas_resp_risco = areas_fichas_casas.groupby(['ENTREVISTA_FICHA'], dropna=False)['ID_FICHA'].count()
     familias_sim = familias_resp_risco.loc['SIM']
     entrevista_sim = entrevistas_resp_risco.loc['SIM']
     entrevista_nao = entrevistas_resp_risco.loc['NÃO']
@@ -60,7 +63,7 @@ def select_categories(df):
 
 def process_data(nome_area_risco, sigla_area):
 
-    nome_area = nome_area_risco.upper()
+    nome_area = unidecode(nome_area_risco.upper())
     
     gerar_graficos = True
     gerar_mapas = True
@@ -76,8 +79,9 @@ def process_data(nome_area_risco, sigla_area):
     dados_fichas_uma_area = pd.DataFrame(json_ficha['items'])
     dados_fichas_uma_area.columns = [col.upper() for col in dados_fichas_uma_area.columns]
     
-    if mapa_uma_area.empty or dados_fichas_uma_area.empty:
+    if mapa_uma_area.empty | dados_fichas_uma_area.empty:
         print("Dados não encontrados no sistema para geração do relatório.")
+        return {}, {}, {}
     
     # mapa_hierarquia_defesa = pd.read_csv("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_hierarquia_defesa.csv", encoding='latin-1')
     # ficha_areas_casas = pd.read_csv('/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/ficha_areas_casas.csv', encoding='latin-1')
@@ -183,6 +187,8 @@ def process_data(nome_area_risco, sigla_area):
     piso_csa = piso_csa.sort_values(ascending=False)
 
     # Get data for Tipo de cobertura
+    areas_fichas_casas_uma_area['TELHADO_CSA'] = areas_fichas_casas_uma_area['TELHADO_CSA'].str.upper()
+    areas_fichas_casas_uma_area['TELHADO_CSA'] = areas_fichas_casas_uma_area['TELHADO_CSA'].str.strip()
     telhado_csa = areas_fichas_casas_uma_area.groupby('TELHADO_CSA', dropna=False)['ID_FICHA'].count()
     telhado_csa = telhado_csa.sort_values(ascending=False)
 
@@ -192,6 +198,7 @@ def process_data(nome_area_risco, sigla_area):
     # probl_csa.index = [i.replace(' ', '') if not pd.isnull(i) else i for i in probl_csa.index]
 
     # Get data for numero de pavimentos
+    areas_fichas_casas_uma_area['NPVTO_CSA'] = areas_fichas_casas_uma_area['NPVTO_CSA'].replace(0, 1)
     npavmto_csa = areas_fichas_casas_uma_area.groupby('NPVTO_CSA', dropna=False)['ID_FICHA'].count()
     npavmto_csa2 = npavmto_csa.reset_index()
     npavmto_csa2.columns = ['Número de pavimentos','Quantidade de Moradias']
@@ -221,12 +228,12 @@ def process_data(nome_area_risco, sigla_area):
     moradias_r2 = get_moradias(dados_risco_moradias, 'R2')
     moradias_r3 = get_moradias(dados_risco_moradias, 'R3')
     moradias_r4 = get_moradias(dados_risco_moradias, 'R4')
-    moradores_r1 = get_moradores(dados_fichas_uma_area, nome_area, 'R1')
-    moradores_r2 = get_moradores(dados_fichas_uma_area, nome_area, 'R2')
-    moradores_r3 = get_moradores(dados_fichas_uma_area, nome_area, 'R3')
-    moradores_r4 = get_moradores(dados_fichas_uma_area, nome_area, 'R4')
+    moradores_r1 = get_moradores(dados_fichas_uma_area, 'R1')
+    moradores_r2 = get_moradores(dados_fichas_uma_area, 'R2')
+    moradores_r3 = get_moradores(dados_fichas_uma_area, 'R3')
+    moradores_r4 = get_moradores(dados_fichas_uma_area, 'R4')
     dados['total_moradores'] = moradores_r1+moradores_r2+moradores_r3+moradores_r4
-    dados['total_familias'] = get_familias(dados_fichas_uma_area, nome_area)
+    dados['total_familias'] = get_familias(dados_fichas_uma_area)
     dados['total_criancas'] = dados_fichas_uma_area['CRIANCA_CSA'].sum()
     dados['total_idosos'] = dados_fichas_uma_area['IDOSO_CSA'].sum()
     dados['total_pcds'] = dados_fichas_uma_area['PCD_CSA'].sum()
@@ -252,7 +259,7 @@ def process_data(nome_area_risco, sigla_area):
         sign_change_moradias = 'não apresentou mudança'
 
     uso_csa_maioria = ' e '.join(select_categories(uso_csa)).lower()
-    list_pav = [numeros[int(n)-1] for n in select_categories(npavmto_csa)]
+    list_pav = [numeros[int(n)-1] for n in select_categories(npavmto_csa) if n != 'NÃO DISPONÍVEL']
     n_pav_maioria = ' ou '.join(list_pav).lower()
     palavra = 'pavimentos'
     if len(list_pav) == 1 and 'um' in list_pav:
@@ -273,7 +280,7 @@ def process_data(nome_area_risco, sigla_area):
                         classificações de risco ({nome_riscos}), \
                         localizada na subprefeitura {dados['subprefeitura']}. \
                         Possui uma média de {(dados['total_moradores']/dados['total_familias']):.0f} pessoas por família. \
-                        O número de moradias da área apresentou um {sign_change_moradias} quando comparado aos relatórios da Defesa Civil.\
+                        O número de moradias da área {sign_change_moradias} quando comparado aos relatórios da Defesa Civil.\
                         Os imóveis são em maioria de uso {uso_csa_maioria} de {n_pav_maioria} {palavra}, \
                         feitos de {tipo_csa_maioria} com cobertura de {telhado_csa_maioria} \
                         e aproximadamente {casa_revestidas:.1f}% possuem acabamento em piso e parede. \
