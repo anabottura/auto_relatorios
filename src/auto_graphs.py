@@ -1,7 +1,7 @@
 # Import Libraries
-import pandas as pd
+# import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
+# from matplotlib.ticker import FormatStrFormatter
 import seaborn as sns
 import numpy as np
 import os
@@ -93,6 +93,24 @@ def graph_setor_moradias(dados, fig_path = 'setor_moradias.png', regenerate=True
     ax.set_title('Quantidade de moradias por setor de risco')
     plt.xticks(rotation = 45, horizontalalignment='right')
     add_bar_labels(ax, dados['Quantidade de Moradias'])
+    plt.tight_layout()
+    ax.get_figure().savefig(fig_path)
+    ax.get_figure().clf()
+    
+    return fig_path
+
+def graph_setor_moradores(dados, fig_path = 'setor_moradores.png', regenerate=True):
+    
+    if not regenerate and os.path.exists(fig_path):
+        return fig_path
+    
+    # Moradores x Setor
+    fig = plt.Figure(figsize=(10,5))
+    ax = sns.barplot(dados, x='Setor', y='Quantidade de Moradores')
+    ax.get_figure()
+    ax.set_title('Quantidade de moradores por setor de risco')
+    plt.xticks(rotation = 45, horizontalalignment='right')
+    add_bar_labels(ax, dados['Quantidade de Moradores'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
     ax.get_figure().clf()

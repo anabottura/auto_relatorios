@@ -238,7 +238,6 @@ def generate_p4(graph_dict, start_item=6, subitem=3):
     
     subtitulos = []
     for key, item in graph_dict.items():
-        print(item)
         subtitulo = ht.tags.li(key,
             ht.tags.div(ht.tags.img(src=pathlib.Path(item).as_uri(),
                                     alt=key,
@@ -252,6 +251,46 @@ def generate_p4(graph_dict, start_item=6, subitem=3):
     ordered_sections.children = ht.TagList(estilos_pagina, titulo)
     
     return ordered_sections
+
+def generate_p5(dict1, dict2, start_item=6, subitem=3, title='Indicadores'):
+    
+    # criar estilos
+    estilos_pagina = ht.tags.style('h1 {font-size:4mm; padding-top:0;} \
+        ol > li {counter-increment: item; font-size:4mm; padding:2mm 0} \
+        ol ol > li {display: block;}\
+        ol ol > li:before {content: counters(item, ".") " "; margin-left: -20px;} \
+        ')
+    
+    subtitulos = []
+    for key, item in dict1.items():
+        subtitulo = ht.tags.li(key,
+            ht.tags.div(ht.tags.img(src=pathlib.Path(item).as_uri(),
+                                    alt=key,
+                                    style='height:80mm; box-sizing: border-box;'),
+                        style='width: 100%; margin-top:10px; margin-left:auto; margin-right:auto; text-align:center;'))
+
+        subtitulos.append(subtitulo)
+    
+    ordered_sections1 = ht.tags.ol(style=f'counter-reset: item {start_item-2}; list-style-type: none; width:180mm; padding: 0 0 0 5mm; margin: 0')
+    titulo1 = ht.tags.li(ht.tags.ol(subtitulos, start=start_item-1, style=f'counter-reset: item {subitem-1};', _class='ol1'))
+    ordered_sections1.children = ht.TagList(estilos_pagina, titulo1)
+    
+    subtitulos = []
+    for key, item in dict2.items():
+        
+        subtitulo = ht.tags.li(key,
+            ht.tags.div(ht.tags.img(src=item,
+                                    alt=key,
+                                    style='height:80mm;'),
+                        style='width: 100%; margin-top:10px; margin-left:auto; margin-right:auto; text-align:center;'))
+
+        subtitulos.append(subtitulo)
+    ordered_sections2 = ht.tags.ol(start=start_item, style=f'counter-reset:item {start_item-1}; width:180mm; padding: 0 0 0 5mm; margin: 0')
+    titulo2 = ht.tags.li(ht.tags.h1(title), ht.tags.ol(subtitulos, start=start_item, style=f'counter-reset:item', _class='ol2'))
+    ordered_sections2.children = ht.TagList(estilos_pagina, titulo2)
+    
+    return ht.TagList(ordered_sections1, ordered_sections2)
+
 
 def checar_doc(pdf_file):
     
@@ -297,28 +336,30 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
                                 mapas['moradias']))
     
     graphs_p3 = {"Quantificação de moradias por setor de risco":graficos['moradias_setor'],
-              "Tipo de uso dos imóveis": graficos['uso_imoveis']}
+                 "Quantificação de moradores por setor de risco":graficos['moradores_setor']}
     
-    graphs_p4 = {"Tipologia das construções": graficos['tipo_construcao'],
-                 "Quantidade de pavimentos": graficos['n_pavimentos']}
-    graphs_p5 =  {"Nível do acabamento das moradias": graficos['acabamento_moradias'],
-                 "Tipo de pisos": graficos['pisos']}
+    graphs_p4 = {"Tipo de uso dos imóveis": graficos['uso_imoveis'],
+                 "Tipologia das construções": graficos['tipo_construcao']}
+    graphs_p5 =  {"Quantidade de pavimentos": graficos['n_pavimentos'], 
+                  "Nível do acabamento das moradias": graficos['acabamento_moradias']}
     
-    graphs_p6 = {"Tipo de coberturas": graficos['cobertura'],
-                 "Problemas estruturais": graficos['problemas']}
+    graphs_p6 = {"Tipo de pisos": graficos['pisos'],
+                 "Tipo de coberturas": graficos['cobertura']}
+    
+    graphs_p7 = {"Problemas estruturais": graficos['problemas']}
     
     conteudo.append(generate_p3(graphs_p3))
     conteudo.append(generate_p4(graphs_p4))
     conteudo.append(generate_p4(graphs_p5, subitem=5))
     conteudo.append(generate_p4(graphs_p6, subitem=7))
     
-    maps_p7 = {"Problemas estruturais": mapas['problemas'],
-               "Crianças": mapas['criancas']}
-    maps_p8 = {"Idosos": mapas['idosos'],
-               "PCDs": mapas['pcds']}
+    maps_p7 = {"Problemas estruturais": mapas['problemas']}
+    maps_p8 = {"Crianças": mapas['criancas'], "Idosos": mapas['idosos']}
+    maps_p9 = {"PCDs": mapas['pcds']}
     
-    conteudo.append(generate_p3(maps_p7, title = 'Espacialização dos indicadores', start_item=7))
-    conteudo.append(generate_p4(maps_p8, start_item=7))
+    conteudo.append(generate_p5(graphs_p7, maps_p7, start_item=7, subitem=9, title = 'Espacialização dos indicadores'))
+    conteudo.append(generate_p4(maps_p8, start_item=7, subitem=2))
+    conteudo.append(generate_p4(maps_p9, start_item=7, subitem=4))
     
     arquivos_html = []
     arquivos_txt = ''
@@ -366,7 +407,7 @@ if __name__ == '__main__':
         nome_area = unidecode(nome_area_risco.upper())
     
         # path to save pdf
-        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}.pdf'
+        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
         
         mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
         if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:

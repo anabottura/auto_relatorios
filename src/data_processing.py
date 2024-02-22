@@ -6,7 +6,7 @@ from unidecode import unidecode
 
 # Functions
 
-def get_moradores(areas_fichas_casas, grau_risco):
+def get_moradores_grau(areas_fichas_casas, grau_risco):
     
     areas_fichas_casas['ENTREVISTA_FICHA'] = areas_fichas_casas['ENTREVISTA_FICHA'].fillna('NÃO')
     if grau_risco in areas_fichas_casas['CLASS_AREA'].unique():
@@ -29,6 +29,29 @@ def get_moradores(areas_fichas_casas, grau_risco):
     else:
         total_moradores = 0
     return total_moradores
+
+def get_moradores_setor(areas_fichas_casas):
+    
+    areas_fichas_casas['ENTREVISTA_FICHA'] = areas_fichas_casas['ENTREVISTA_FICHA'].fillna('NÃO')
+    moradores_resp_setor = areas_fichas_casas.groupby(['SETOR','ENTREVISTA_FICHA'], dropna=False)['QTDE_MORADORES_CSA'].sum()
+    entrevistas_resp_setor = areas_fichas_casas.groupby(['SETOR','ENTREVISTA_FICHA'], dropna=False)['ID_FICHA'].count()
+    media_moradores_total = moradores_resp_setor.loc[:, 'SIM'].sum()/entrevistas_resp_setor.loc[:, 'SIM'].sum()
+    moradores_setor = {}
+    for setor in moradores_resp_setor.index.get_level_values("SETOR").unique():
+        if (setor, 'SIM') in moradores_resp_setor.index:
+            moradores_sim = moradores_resp_setor.loc[setor, 'SIM']
+            entrevista_sim = entrevistas_resp_setor.loc[setor, 'SIM']
+            media_moradores = moradores_sim/entrevista_sim
+        else:
+            moradores_sim = 0
+            media_moradores = media_moradores_total
+        if (setor, 'NÃO') in entrevistas_resp_setor:
+            entrevista_nao = entrevistas_resp_setor.loc[setor, 'NÃO']
+        else:
+            entrevista_nao = 0
+        moradores_setor[setor] = int(round(media_moradores * entrevista_nao) + moradores_sim)
+
+    return pd.Series(moradores_setor)
 
 def get_familias(areas_fichas_casas):
     
@@ -169,7 +192,11 @@ def process_data(nome_area_risco, sigla_area):
     # Get data for Moradias x Setor
     dados_setor_moradias = dados_fichas_uma_area.groupby(["SETOR"]).count()['ID_FICHA'].reset_index()
     dados_setor_moradias.columns = ['Setor','Quantidade de Moradias']
-
+    
+    # Get data for Moradores x Setor
+    dados_setor_moradores = get_moradores_setor(dados_fichas_uma_area).reset_index()
+    dados_setor_moradores.columns = ['Setor','Quantidade de Moradores']
+    
     # Get data for Uso dos Imóveis
     uso_csa = areas_fichas_casas_uma_area.groupby('USO_CSA', dropna=False)['ID_FICHA'].count()
     uso_csa = uso_csa.sort_values(ascending=False)
@@ -205,6 +232,7 @@ def process_data(nome_area_risco, sigla_area):
 
     graficos = {}
     graficos['moradias_setor'] = auto_graphs.graph_setor_moradias(dados_setor_moradias, f'{save_images}/setor_moradias.png', regenerate=gerar_graficos)
+    graficos['moradores_setor'] = auto_graphs.graph_setor_moradores(dados_setor_moradores, f'{save_images}/setor_moradores.png', regenerate=gerar_graficos)
     graficos['moradias_risco'] = auto_graphs.graph_risco_moradias(dados_risco_moradias, f'{save_images}/risco_moradias.png', regenerate=gerar_graficos)
     graficos['uso_imoveis'] = auto_graphs.graph_percentages(uso_csa, 'Tipo de uso dos imóveis', f'{save_images}/uso_imoveis.png', regenerate=gerar_graficos)
     graficos['tipo_construcao'] = auto_graphs.graph_percentages(tipologia_csa, 'Tipologia das moradias',f'{save_images}/tipologia_imoveis.png', regenerate=gerar_graficos)
@@ -228,10 +256,10 @@ def process_data(nome_area_risco, sigla_area):
     moradias_r2 = get_moradias(dados_risco_moradias, 'R2')
     moradias_r3 = get_moradias(dados_risco_moradias, 'R3')
     moradias_r4 = get_moradias(dados_risco_moradias, 'R4')
-    moradores_r1 = get_moradores(dados_fichas_uma_area, 'R1')
-    moradores_r2 = get_moradores(dados_fichas_uma_area, 'R2')
-    moradores_r3 = get_moradores(dados_fichas_uma_area, 'R3')
-    moradores_r4 = get_moradores(dados_fichas_uma_area, 'R4')
+    moradores_r1 = get_moradores_grau(dados_fichas_uma_area, 'R1')
+    moradores_r2 = get_moradores_grau(dados_fichas_uma_area, 'R2')
+    moradores_r3 = get_moradores_grau(dados_fichas_uma_area, 'R3')
+    moradores_r4 = get_moradores_grau(dados_fichas_uma_area, 'R4')
     dados['total_moradores'] = moradores_r1+moradores_r2+moradores_r3+moradores_r4
     dados['total_familias'] = get_familias(dados_fichas_uma_area)
     dados['total_criancas'] = dados_fichas_uma_area['CRIANCA_CSA'].sum()
