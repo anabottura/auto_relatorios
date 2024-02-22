@@ -1,5 +1,5 @@
 rel_a_fazer = {
-    # 'Jardim Elba':'SB-11',
+    'Jardim Elba':'SB-11',
     # 'Fazenda da Juta III': 'HSB-07',
     # 'Brás de Abreu': 'HAD-04',
     # 'Maria Cursi': 'SM-03',
@@ -36,7 +36,7 @@ rel_a_fazer = {
     # 'Jardim São Jorge': 'AD-13',
     # 'Jardim Macedônia': 'CL-29',
     # 'Francisco Munhoz Filho': 'IQ-15',
-    'Piscinão': 'SM-25',
+    # 'Piscinão': 'SM-25',
     # 'Fazendinha': 'LA-07',
     # 'Murillo Machado': 'SM-23',
     # 'Souza Ramos': 'CT-07',
@@ -63,6 +63,61 @@ rel_a_fazer = {
     # 'Vila Clara - Ubs': 'JA-04',
     # 'Tantas Palavras': 'IQ-14',
     # 'São Vicente': 'HIQ-01',
-#    'Mata Virgem - Água Santa': 'AD-11'
-    
+#    'Mata Virgem - Água Santa': 'AD-11',
+
+    # 'Avenida Santo Afonso III': 'AD-03',
+    # 'Pedra Sobre Pedra': 'AD-07',
+    # 'Americanópolis I': 'AD-14',
+    # 'Abacateiro': 'AD-16',
+    # 'Vila Dalva': 'BT-03',
+    # 'Jardim Arpoador': 'BT-06',
+    # "Jardim DAbril II": 'BT-10',
+    # 'Ponta da Praia': 'BT-25', # Arrumar pontos
+    # 'Jardim Lídia': 'CL-01',
+    # 'Jardim Comercial II': 'CL-03',
+    # 'Jardim Comercial III': 'CL-32',
+    # 'Morro da Lua': 'CL-33',
+    # 'Vale das Virtudes I': 'CL-35',
+    # 'Vila Cais': 'CL-36',
+    # 'Simão de Miranda': 'CL-38',
+    # 'Jardim Varginha II': 'CS-15',
+    # 'Futuro Melhor': 'CV-08',
+    # 'Córrego do  Bispo': 'CV-10',
+    # 'Odassi Nazzali': 'CV-12',
+    # 'Dário Ribeiro': 'CV-14',
+    # 'Eucaliptos': 'CV-16',
+    # 'Papaterra': 'CV-22',
+    # 'Vila União': 'EM-04', # Arrumar setores
+    # 'Jardim Damasceno II': 'FO-02',
+    # 'Recanto das Estrelas': 'FO-10',
+    # 'Hugo Ítalo Merigo': 'FO-13',
+    # 'Maré Vermelha I': 'IQ-07',
+    # 'Joaquim Meira de Siqueira': 'IQ-08',
+    # 'Vila Clara - Rua Marjorie': 'JA-02',
+    # 'Vila Nova Galvão': 'JT-06', # Arrumar setores
+    # 'Jardim Fontalis': 'JT-10',
+    # 'Recanto São João': 'JT-23', # Arrumar setores
+    # 'Jardim Copacabana': 'MB-07',
+    # 'Felicidade': 'MB-13', # Arrumar setores
+    # 'Chácara Santana': 'MB-20',
+    # 'Jardim Capelinha': 'MB-25',
+    # 'Jardim São Manuel': 'MB-31',
+    # 'Jardim Thomaz': 'MB-37',
+    # 'Chácara Santa Maria I': 'MB-45',
+    # 'Hugo Ítalo Merigo II': 'FO-27',
+    # 'Quadra de Futebol': 'FO-28',
+    # 'Tribo': 'FO-29',
+    # 'Cantídio Sampaio 4541': 'FO-30',
+    # 'Nova União': 'FO-31',
+    # 'Cristal': 'FO-33',
+    # 'Ilha de Itaparica': 'FO-34',
+    # 'Jardim Itapura II': 'HAD-14',
+    # 'Zavuvus': 'HAD-16',
+    # 'Augusto Gonzaga': 'HAD-17',
+    # 'Canto da Noite': 'HAD-20',
+    # 'Jardim São Jorge': 'HAD-22',
+    # 'Jardim Selma': 'HAD-23', # Arrumar setores 
+    # 'Keralux': 'HEM-03', # Arrumar setores 
+    # 'Jardim Imbé': 'MB-62'
+    # 'Jardim São Jorge': 'AD-13'
 }
