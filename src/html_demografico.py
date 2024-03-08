@@ -107,7 +107,7 @@ def generate_page(conteudo, header_footer_info, d_height_mm=297, d_width_mm=210)
     
     return arquivo
 
-def generate_p0(nome_area_risco, sigla_area):
+def generate_p0(nome_area_risco, sigla_area, obs_area):
     
     # Gerando conteúdo da página
     
@@ -118,9 +118,12 @@ def generate_p0(nome_area_risco, sigla_area):
                   ht.tags.p(ht.tags.i(f"Área de Risco: {nome_area_risco}"),
                             style="text-align:right; padding-top:50mm;"),
                   ht.tags.p(ht.tags.i(f"Sigla: {sigla_area}"),
-                            style="text-align:right;")]
+                            style="text-align:right;"),
+                  ht.tags.p(ht.tags.i(obs_area),
+                            style="text-align:right;")
+                  ]
     
-    h = mm_to_px(197)
+    h = mm_to_px(177)
     capa = ht.div(*texto_capa, style='height:{h}mm; width:100%; padding:0 5mm;  margin:0; border:0; box-sizing: border-box;')
     
     return capa
@@ -315,7 +318,7 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
                         'logo_fdte':logo_fdte}
     
     conteudo = []
-    conteudo.append(generate_p0(nome_area_risco, sigla_area))
+    conteudo.append(generate_p0(nome_area_risco, sigla_area, dados['obs_area']))
     
     conteudo.append(generate_p1(nome_area_risco, sigla_area,
                                 dados['subprefeitura'],

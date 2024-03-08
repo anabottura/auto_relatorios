@@ -245,6 +245,16 @@ def process_data(nome_area_risco, sigla_area):
     ################################################################################################
     # OTHER DATA
     dados = {}
+    
+    # Checando se precisa adicionar observação
+    graus = mapa_uma_area['RHD_GRAU'].unique()
+    graus_fichas = dados_fichas_uma_area['CLASS_AREA'].unique()
+    if len(graus) != len(graus_fichas):
+        obs = 'Levantamento demográfico realizado apenas para setores R3 e R4'
+    else:
+        obs = ''
+    
+    dados['obs_area'] = obs
     dados['subprefeitura'] = mapa_uma_area.iat[0,10]
     dados['hierarquia_area'] = int(mapa_uma_area.iat[0,9])
     dados['data_censo_inicial'] = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).min().date().strftime('%d/%m/%Y') # ver de onde pegar esse
