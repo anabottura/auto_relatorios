@@ -77,7 +77,7 @@ def graph_risco_moradias(dados, fig_path = 'risco_moradias.png', regenerate=True
     add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
-    ax.get_figure().clf()
+    plt.close(ax.get_figure())
     
     return fig_path
 
@@ -95,7 +95,7 @@ def graph_setor_moradias(dados, fig_path = 'setor_moradias.png', regenerate=True
     add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
-    ax.get_figure().clf()
+    plt.close(ax.get_figure())
     
     return fig_path
 
@@ -113,7 +113,7 @@ def graph_setor_moradores(dados, fig_path = 'setor_moradores.png', regenerate=Tr
     add_bar_labels(ax, dados['Quantidade de Moradores'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path)
-    ax.get_figure().clf()
+    plt.close(ax.get_figure())
     
     return fig_path
 
@@ -132,7 +132,7 @@ def graph_n_pavimentos(dados, fig_path = 'pav_imoveis.png', regenerate=True):
     add_bar_labels(ax, dados['Quantidade de Moradias'])
     plt.tight_layout()
     ax.get_figure().savefig(fig_path, bbox_inches='tight')
-    ax.get_figure().clf()
+    plt.close(ax.get_figure())
     
     return fig_path
 
@@ -146,7 +146,7 @@ def graph_percentages(dados, graph_title, fig_path, regenerate=True):
     ax.set_title(graph_title, position=(0.8, 1))
     plt.tight_layout()
     ax.get_figure().savefig(fig_path, bbox_inches='tight')
-    ax.get_figure().clf()
+    plt.close(ax.get_figure())
     
     return fig_path
 
