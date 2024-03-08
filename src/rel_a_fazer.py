@@ -1,4 +1,32 @@
 rel_a_fazer = {
+    # 'Nossa Senhora da Assunção': 'BT-17', # Arrumar setores
+    # 'Ponta da Praia': 'BT-25', # Arrumar setores
+    # 'Simão de Miranda': 'CL-38', # Arrumar setores
+    # 'Felicidade': 'MB-13', # Arrumar setores
+    
+    'Córrego Pedreiras': 'AD-26',
+    # 'Nossa Senhora da Fonte': 'G-17',
+    # 'Parque Brasilândia B': 'FO-26', # R3/R4
+    # 'Itaberaba I':'PR-11',
+    # 'Jardim das Rosas': 'CL-28',
+    # 'Beija - Flor': 'HPR-04',
+    # 'Engordador': 'JT-12',
+    # 'Vila União': 'EM-04',
+    # 'Keralux': 'HEM-03',
+    # 'Vila Nova Galvão': 'JT-06',
+    # 'Jardim Fontalis': 'JT-10',
+    # 'Recanto São João': 'JT-23',
+    # 'Jardim Selma': 'HAD-23',
+    # 'Vilma Flor': 'CT-05', #/ 'HCT-01'
+    # 'Fazenda da Juta': 'SB-05',
+    # 'Jova Rural II': 'JT-01', # R3/R4
+    # 'Jardim Miriam': 'AD-19',
+    # 'Alfredo Avila': 'JT-07', # R3/R4
+    # 'Flor de Lis': 'FO-05', # R3/R4
+    # 'Jardim São Paulo II': 'G-05',
+    # 'Jardim Aurora IV':'G-04',
+
+    
     # 'Jardim Elba':'SB-11',
     # 'Fazenda da Juta III': 'HSB-07',
     # 'Brás de Abreu': 'HAD-04',
@@ -43,7 +71,6 @@ rel_a_fazer = {
     # 'Jardim Santa Terezinha IV': 'IQ-03',
     # 'Jardim Santa Terezinha III': 'IQ-02',
     # 'Ministro Correia De Castro': 'FO-16',
-    'Nossa Senhora da Assunção': 'BT-17',
     # 'Recanto Verde I': 'SM-01',
     # 'Morumbizinho': 'SM-32',
     # 'Jardim Filhos Da Terra': 'JT-02',
@@ -72,14 +99,12 @@ rel_a_fazer = {
 #     'Vila Dalva': 'BT-03',
 #     'Jardim Arpoador': 'BT-06',
 #     "Jardim DAbril II": 'BT-10',
-    'Ponta da Praia': 'BT-25', # Arrumar pontos
     # 'Jardim Lídia': 'CL-01',
     # 'Jardim Comercial II': 'CL-03',
     # 'Jardim Comercial III': 'CL-32',
     # 'Morro da Lua': 'CL-33',
     # 'Vale das Virtudes I': 'CL-35',
     # 'Vila Cais': 'CL-36',
-    'Simão de Miranda': 'CL-38',
     # 'Jardim Varginha II': 'CS-15',
     # 'Futuro Melhor': 'CV-08',
     # 'Córrego do Bispo': 'CV-10',
@@ -98,7 +123,6 @@ rel_a_fazer = {
     # 'Jardim Fontalis': 'JT-10',
     # 'Recanto São João': 'JT-23', 
     # 'Jardim Copacabana': 'MB-07',
-    'Felicidade': 'MB-13', # Arrumar setores
     # 'Chácara Santana': 'MB-20',
     # 'Jardim Capelinha': 'MB-25',
     # 'Jardim São Manuel': 'MB-31',
