@@ -123,7 +123,7 @@ def process_data(nome_area_risco, sigla_area):
     
 
     # path to save images
-    save_images = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images'
+    save_images = './images'
 
     colours = pd.Series({'R1':'#4FC26A','R2':'#F0E113','R3':'#FF8801','R4':'#BF243C'})
     colours.name = 'colours'

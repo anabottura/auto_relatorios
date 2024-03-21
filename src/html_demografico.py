@@ -1,3 +1,5 @@
+import sys
+sys.path.append("rest/public_api/api/pmrr/relatorios/demografico/arquivos")
 from criar_header import create_header_table
 from data_processing import *
 import pandas as pd
@@ -6,8 +8,11 @@ import pathlib
 from math import floor
 import pdfkit
 import os
-from rel_a_fazer import *
+# from rel_a_fazer import *
 from unidecode import unidecode
+import requests
+
+
 
 # Functions
 
@@ -400,22 +405,28 @@ def pdf_doc(arquivos, pdf_file):
 if __name__ == '__main__':
     
     # fixed images
-    logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
-    logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    logo_fdte = 'rest/public_api/api/pmrr/relatorios/demografico/arquivos/images/logo_fdte.png'
+    logo_sp = 'rest/public_api/api/pmrr/relatorios/demografico/arquivos/images/logo_sp.png'
     
-    for nome_area_risco, sigla_area in rel_a_fazer.items():
-        # nome_area_risco = 'Fazenda da Juta III' #'Morro da Lua' 
-        # sigla_area = 'HSB-07' #'CL-33'
-        print(f'Gerando relatório da área {sigla_area} - {nome_area_risco}')
-        nome_area = unidecode(nome_area_risco.upper())
+    # for nome_area_risco, sigla_area in rel_a_fazer.items():
+    nome_area_risco = 'Fazenda da Juta III' #'Morro da Lua' 
+    sigla_area = 'HSB-07' #'CL-33'
+    print(f'Gerando relatório da área {sigla_area} - {nome_area_risco}')
+    nome_area = unidecode(nome_area_risco.upper())
+
+    # path to save pdf
+    pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
     
-        # path to save pdf
-        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
-        
-        mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
-        if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
-            print(f'Não foi possível gerar relatório para {nome_area}')
-            continue
-        html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
-        
-        pdf_doc(html_txt, pdf_file)
+    mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
+    if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
+        print(f'Não foi possível gerar relatório para {nome_area}')
+    
+    html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
+    gerado = pdf_doc(html_txt, pdf_file)
+    
+    if gerado:
+        status = 2
+    else:
+        status = 1
+    
+    requests.post(url=f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/update_table?sigla_var={sigla_area}&status_var={status}')
