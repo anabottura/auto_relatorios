@@ -73,7 +73,7 @@ def generate_footer(logo_fdte):
     
     h = mm_to_px(30)
     footer = ht.tags.footer(style=f'height:{h}px; padding:0; margin:0; box-sizing:border-box;border:0; page-break-after: always;')
-    footer_div = ht.div(ht.tags.img(src=pathlib.Path(logo_fdte).as_uri(), alt='logo FDTE', style='height:15mm'), style="text-align: center; margin-bottom: 0; padding: 0")
+    footer_div = ht.div(ht.tags.img(src=logo_fdte, alt='logo FDTE', style='height:15mm'), style="text-align: center; margin-bottom: 0; padding: 0")
     footer.children.append(footer_div)
     
     return footer
@@ -415,7 +415,8 @@ if __name__ == '__main__':
     nome_area = unidecode(nome_area_risco.upper())
 
     # path to save pdf
-    pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
+    # pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
+    pdf_file = f'/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/{nome_area}_{sigla_area}.pdf'
     
     mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
     if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
@@ -429,4 +430,4 @@ if __name__ == '__main__':
     else:
         status = 1
     
-    requests.post(url=f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/update_table?sigla_var={sigla_area}&status_var={status}')
+    # requests.post(url=f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/update_table?sigla_var={sigla_area}&status_var={status}')

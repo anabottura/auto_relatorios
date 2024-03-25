@@ -10,6 +10,7 @@ import pathlib
 from pyppeteer import launch
 import nest_asyncio
 import os
+from html2image import Html2Image
 
 def define_text_color(hex_color):
     
@@ -120,23 +121,23 @@ def map_markers_in_sections(setores_gdf, geometria_fichas, icon='home', save=Fal
         
     return my_map2
 
-def html_to_png(html_file, png_file):
+# def html_to_png(html_file, png_file):
     
-    nest_asyncio.apply()
+#     nest_asyncio.apply()
     
-    async def generate_pdf(url, png_path):
-        browser = await launch({'defaultViewport': {'width':1440,'height':900}})
-        page = await browser.newPage()
+#     async def generate_pdf(url, png_path):
+#         browser = await launch({'defaultViewport': {'width':1440,'height':900}})
+#         page = await browser.newPage()
         
-        await page.goto(url)
-        await page.screenshot({'path': png_path, 'width':2880, 'height':1800}, clip={'x':0, 'y':0, 'width':1440, 'height':900})
+#         await page.goto(url)
+#         await page.screenshot({'path': png_path, 'width':2880, 'height':1800}, clip={'x':0, 'y':0, 'width':1440, 'height':900})
         
-        await browser.close()
+#         await browser.close()
 
-    # Run the function
+#     # Run the function
     
-    url_path = pathlib.Path(html_file).as_uri()
-    asyncio.get_event_loop().run_until_complete(generate_pdf(url_path, png_file))
+#     url_path = pathlib.Path(html_file).as_uri()
+#     asyncio.get_event_loop().run_until_complete(generate_pdf(url_path, png_file))
 
 def process_map_data(mapa_uma_area):
     
@@ -193,7 +194,7 @@ def generate_mapa_setores(new_gdf, map_path = 'mapa_setores', regenerate=True):
     
     map_file=f'{map_path}.html'
     output_png = f'{map_path}.png'
-    html_to_png(map_file, output_png)
+    Html2Image(output_path=os.path.dirname(output_png), custom_flags=['--virtual-time-budget=1000']).screenshot(html_file=map_file, save_as=os.path.basename(output_png))
     
     return output_png
 
@@ -210,6 +211,6 @@ def generate_points_mapa(new_gdf, geometria_fichas, map_path='mapa', icon='home'
     
     map_file=f'{map_path}.html'
     output_png = f'{map_path}.png'
-    html_to_png(map_file, output_png)
+    Html2Image(output_path=os.path.dirname(output_png), custom_flags=['--virtual-time-budget=1000']).screenshot(html_file=map_file, save_as=os.path.basename(output_png))
     
     return output_png
