@@ -72,7 +72,7 @@ def plot_markers_in_map(map, geometria_fichas, inside_icon='home'):
         
         cor=r['COR']
         if inside_icon == 'home':
-            home_icon = f'<i class="fa fa-{inside_icon}" aria-hidden="true" style="position:absolute; color:white; font-size:7pt; padding:0; margin:0;top:3px;left:3px"></i>'
+            home_icon = f'<i class="fa fa-{inside_icon}" aria-hidden="true" style="position:absolute; color:white; font-size:20px; padding:0; margin:0;top:3px;left:3px"></i>'
             set_icon = 'map-marker'
         elif inside_icon == 'pav':
             cor = cmap(r['NPVTO_CSA'])
@@ -82,14 +82,14 @@ def plot_markers_in_map(map, geometria_fichas, inside_icon='home'):
             home_icon = ''
             set_icon = icons[inside_icon]
             
-        marker_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:20pt; color:{cor};">{home_icon}</i>'
-        outline_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:21pt; color:black;"></i>'
+        marker_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:40px; color:{cor};">{home_icon}</i>'
+        outline_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:45px; color:black;"></i>'
         # icon = plugins.BeautifyIcon(prefix='fa', icon="child", icon_shape="marker", background_color=cor, border=1, border_color='black')
-        divicon = folium.DivIcon(icon_anchor=(7,22), html=f'<div style="background-color: transparent; ">{marker_icon}</div>')
+        divicon = folium.DivIcon(icon_anchor=(14,42), html=f'<div style="background-color: transparent; ">{marker_icon}</div>')
         
         
         my_marker = folium.Marker(icon=divicon)
-        border_marker = folium.Marker(icon=folium.DivIcon(icon_anchor=(8,23), html=f'<div style="background-color: transparent; ">{outline_icon}</div>'))
+        border_marker = folium.Marker(icon=folium.DivIcon(icon_anchor=(16,43), html=f'<div style="background-color: transparent; ">{outline_icon}</div>'))
         
         geo_j = folium.GeoJson(data=r['latlong'], marker=my_marker)
         geo_j2 = folium.GeoJson(data=r['latlong'], marker=border_marker)
@@ -187,7 +187,7 @@ def generate_mapa_setores(new_gdf, map_path = 'mapa_setores', regenerate=True):
         
         if inside_points:
             max_distance_point = max(inside_points, key=lambda p: r['geometry'].boundary.distance(p))
-            folium.Marker(location = [max_distance_point.y, max_distance_point.x], icon=folium.DivIcon(icon_size=(5,5), icon_anchor=(10,10), html=f'<div style="font-size:16pt; color:{define_text_color(cor)}; font-weight:bold">{r["RHD_GRAU"]}</div>')).add_to(geo_j)
+            folium.Marker(location = [max_distance_point.y, max_distance_point.x], icon=folium.DivIcon(icon_size=(5,5), icon_anchor=(10,10), html=f'<div style="font-size:40px; color:{define_text_color(cor)}; font-weight:bold">{r["RHD_GRAU"]}</div>')).add_to(geo_j)
         geo_j.add_to(my_map)
 
     my_map.save(f'{map_path}.html')
