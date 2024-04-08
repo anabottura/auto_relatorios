@@ -8,7 +8,7 @@ import pathlib
 from math import floor
 import pdfkit
 import os
-# from rel_a_fazer import *
+from rel_a_fazer import *
 from unidecode import unidecode
 import requests
 
@@ -112,7 +112,7 @@ def generate_page(conteudo, header_footer_info, d_height_mm=297, d_width_mm=210)
     
     return arquivo
 
-def generate_p0(nome_area_risco, sigla_area, obs_area):
+def generate_p0(nome_area_risco, sigla_area):
     
     # Gerando conteúdo da página
     
@@ -123,9 +123,9 @@ def generate_p0(nome_area_risco, sigla_area, obs_area):
                   ht.tags.p(ht.tags.i(f"Área de Risco: {nome_area_risco}"),
                             style="text-align:right; padding-top:50mm;"),
                   ht.tags.p(ht.tags.i(f"Sigla: {sigla_area}"),
-                            style="text-align:right;"),
-                  ht.tags.p(ht.tags.i(obs_area),
                             style="text-align:right;")
+                #   ht.tags.p(ht.tags.i(obs_area),
+                #             style="text-align:right;")
                   ]
     
     h = mm_to_px(177)
@@ -162,7 +162,7 @@ def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_ini
     
     return conteudo
 
-def generate_p2(moradias_defesa, moradias_fdte, total_moradores, total_criancas, total_idosos, total_pcds, risco_df, grafico_moradias_risco, mapa_moradias):
+def generate_p2(moradias_defesa, moradias_fdte, total_moradores, total_criancas, total_idosos, total_pcds, risco_df, grafico_moradias_risco, mapa_moradias, text_r3r4):
     
     # criar estilos
     estilos_pagina = ht.tags.style(".texto_geral {font-size:3.5mm;} \
@@ -176,7 +176,7 @@ def generate_p2(moradias_defesa, moradias_fdte, total_moradores, total_criancas,
                         ht.tags.p(f"No último levantamento elaborado pela Defesa Civil, a área apresentava \
                                 aproximadamente {moradias_defesa:.0f} moradias. O resultado deste censo resultou em {moradias_fdte:.0f} moradias \
                                 com um total de {total_moradores:.0f} habitantes, \
-                                sendo {total_criancas:.0f} crianças, \
+                                sendo{text_r3r4} {total_criancas:.0f} crianças, \
                                 {total_idosos:.0f} idosos e \
                                 {total_pcds:.0f} pessoas com deficiência (PCDs).",
                                 class_='texto_geral',
@@ -323,7 +323,7 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
                         'logo_fdte':logo_fdte}
     
     conteudo = []
-    conteudo.append(generate_p0(nome_area_risco, sigla_area, dados['obs_area']))
+    conteudo.append(generate_p0(nome_area_risco, sigla_area))
     
     conteudo.append(generate_p1(nome_area_risco, sigla_area,
                                 dados['subprefeitura'],
@@ -335,13 +335,14 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
     
     conteudo.append(generate_p2(dados['moradias_defesa'],
                                 dados['moradias_fdte'],
-                                dados['total_moradores'],
+                                dados['total_moradores_2'],
                                 dados['total_criancas'],
                                 dados['total_idosos'],
                                 dados['total_pcds'],
                                 dados['risco_df'],
                                 graficos['moradias_risco'],
-                                mapas['moradias']))
+                                mapas['moradias'],
+                                dados['text_r3r4']))
     
     graphs_p3 = {"Quantificação de moradias por setor de risco":graficos['moradias_setor'],
                  "Quantificação de moradores por setor de risco":graficos['moradores_setor']}
@@ -405,29 +406,30 @@ def pdf_doc(arquivos, pdf_file):
 if __name__ == '__main__':
     
     # fixed images
-    logo_fdte = 'rest/public_api/api/pmrr/relatorios/demografico/arquivos/images/logo_fdte.png'
-    logo_sp = 'rest/public_api/api/pmrr/relatorios/demografico/arquivos/images/logo_sp.png'
+    logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
     
-    # for nome_area_risco, sigla_area in rel_a_fazer.items():
-    nome_area_risco = 'Fazenda da Juta III' #'Morro da Lua' 
-    sigla_area = 'HSB-07' #'CL-33'
-    print(f'Gerando relatório da área {sigla_area} - {nome_area_risco}')
-    nome_area = unidecode(nome_area_risco.upper())
+    for nome_area_risco, sigla_area in rel_a_fazer.items():
+    # nome_area_risco = 'Jardim Etelvina' #'Morro da Lua' 
+    # sigla_area = 'G-15' #'CL-33'
+        print(f'Gerando relatório da área {sigla_area} - {nome_area_risco}')
+        nome_area = unidecode(nome_area_risco.upper())
 
-    # path to save pdf
-    # pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
-    pdf_file = f'/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/{nome_area}_{sigla_area}.pdf'
-    
-    mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
-    if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
-        print(f'Não foi possível gerar relatório para {nome_area}')
-    
-    html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
-    gerado = pdf_doc(html_txt, pdf_file)
-    
-    if gerado:
-        status = 2
-    else:
-        status = 1
-    
+        # path to save pdf
+        # pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
+        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+        
+        mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
+        if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
+            print(f'Não foi possível gerar relatório para {nome_area}')
+        
+        html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
+        gerado = pdf_doc(html_txt, pdf_file)
+        
+        if gerado:
+            status = 2
+        else:
+            status = 1
+        
+        print(status)
     # requests.post(url=f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/update_table?sigla_var={sigla_area}&status_var={status}')

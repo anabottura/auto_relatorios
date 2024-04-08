@@ -88,23 +88,37 @@ def process_data(nome_area_risco, sigla_area):
 
     nome_area = unidecode(nome_area_risco.upper())
     
+    fator_telhados = {'R1':2.05, 'R2':1.55}
+    
     gerar_graficos = True
     gerar_mapas = True
 
     url_area = f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/area?nome_var={nome_area}&sigla_var={sigla_area}'
     url_ficha = f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/fichas?nome_var={nome_area}&sigla_var={sigla_area}'
+    url_telhados = f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/telhados?nome_var={nome_area}&sigla_var={sigla_area}'
     r_area = requests.get(url_area)
     r_ficha = requests.get(url_ficha)
+    r_telhados = requests.get(url_telhados)
     json_area = r_area.json()
     json_ficha = r_ficha.json()
+    json_telhados = r_telhados.json()
     mapa_uma_area = pd.DataFrame(json_area['items'])
     mapa_uma_area.columns = [col.upper() for col in mapa_uma_area.columns]
     dados_fichas_uma_area = pd.DataFrame(json_ficha['items'])
     dados_fichas_uma_area.columns = [col.upper() for col in dados_fichas_uma_area.columns]
+    telhados = pd.DataFrame(json_telhados['items'])
+    
     
     if mapa_uma_area.empty | dados_fichas_uma_area.empty:
         print("Dados não encontrados no sistema para geração do relatório.")
         return {}, {}, {}
+    
+    if telhados.empty:
+        print("Dados de estimativa de telhados não encontrados no sistema.")
+    else:
+        telhados.columns = ['ID_FICHA', 'RHD_NOME', 'RHD_SIGLA', 'SETOR', 'CLASS_AREA', 'GPS_LAT_FICHA', 'GPS_LONG_FICHA', 'ORIGEM']
+        telhados['CLASS_AREA'] = telhados['CLASS_AREA'].str.upper()
+        telhados['ID_FICHA'] = telhados['ID_FICHA'] + 10000000 # pode ser que precise mudar
     
     # mapa_hierarquia_defesa = pd.read_csv("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_hierarquia_defesa.csv", encoding='latin-1')
     # ficha_areas_casas = pd.read_csv('/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/ficha_areas_casas.csv', encoding='latin-1')
@@ -120,14 +134,12 @@ def process_data(nome_area_risco, sigla_area):
     # mapa_areas = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/mapa_areas_hidro_geo-2.xlsx")
     # base_defesa = pd.read_excel("/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/apex_tables/gh_nova_base.xlsx")
 
-    
 
     # path to save images
-    save_images = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/images'
+    save_images = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images'
 
     colours = pd.Series({'R1':'#4FC26A','R2':'#F0E113','R3':'#FF8801','R4':'#BF243C'})
     colours.name = 'colours'
-
 
 
     # processing tables
@@ -145,7 +157,13 @@ def process_data(nome_area_risco, sigla_area):
 
     # Get data for maps of area
     new_gdf = auto_maps.process_map_data(mapa_uma_area)
-    geometria_fichas = dados_fichas_uma_area.merge(new_gdf, left_on='SETOR', right_on='RHD_SETOR') #todas as fichas
+    
+    if telhados.empty:
+        dados_todas_fichas = dados_fichas_uma_area
+    else:
+        dados_todas_fichas = pd.concat([dados_fichas_uma_area, telhados])
+    
+    geometria_fichas = dados_todas_fichas.merge(new_gdf, left_on='SETOR', right_on='RHD_SETOR') #todas as fichas
     # Crianças
     df_area = dados_fichas_uma_area
     df_criancas_area = df_area[(~df_area['CRIANCA_CSA'].isna()) & (df_area['CRIANCA_CSA']!=0)]
@@ -179,23 +197,73 @@ def process_data(nome_area_risco, sigla_area):
 
     ################################################################################################
     # GRAPHS
+    
+    # DADOS MORADORES
+    moradores_r1 = get_moradores_grau(dados_fichas_uma_area, 'R1')
+    moradores_r2 = get_moradores_grau(dados_fichas_uma_area, 'R2')
+    moradores_r3 = get_moradores_grau(dados_fichas_uma_area, 'R3')
+    moradores_r4 = get_moradores_grau(dados_fichas_uma_area, 'R4')
+    risco_df_moradores = {'R1': moradores_r1,'R2': moradores_r2,'R3': moradores_r3,'R4': moradores_r4}
 
     areas_fichas_casas_uma_area = dados_fichas_uma_area
     areas_fichas_casas_uma_area = areas_fichas_casas_uma_area.fillna('NÃO DISPONÍVEL')
     # dados_fichas_uma_area = dados_fichas_uma_area.fillna('NÃO DISPONÍVEL')
 
     # Get data for Moradias x Risco
-    dados_risco_moradias = dados_fichas_uma_area.groupby(["CLASS_AREA"]).count()['ID_FICHA'].reset_index()
+    dados_risco_moradias = dados_fichas_uma_area.groupby(["CLASS_AREA"]).count()['ID_FICHA'].reset_index() # mudar para todas as fichas
+    # Get média r3/r4
+    risco_moradores = pd.Series(risco_df_moradores)
+    risco_moradias = dados_risco_moradias.set_index('CLASS_AREA')
+    if 'R3' in risco_moradias.index:
+        mediar3 = risco_moradores.loc['R3']/risco_moradias.loc['R3']
+    else:
+        mediar3 = 0
+    if 'R4' in risco_moradias.index:
+        mediar4 = risco_moradores.loc['R4']/risco_moradias.loc['R4']
+    else:
+        mediar4 = 0
+    mediar3r4 = (mediar3)+(mediar4)/2
+    if not telhados.empty:
+        dados_risco_telhados = telhados.groupby(["CLASS_AREA", 'ORIGEM']).count()['ID_FICHA'].reset_index()
+        for risco in ['R1', 'R2']:
+            idx_fdte = dados_risco_telhados.index[(dados_risco_telhados['CLASS_AREA'] == risco) & (dados_risco_telhados['ORIGEM'] == 'FDTE')]
+            if len(idx_fdte) > 0:
+                dados_risco_telhados.at[idx_fdte[0], 'ID_FICHA'] = round(dados_risco_telhados.at[idx_fdte[0], 'ID_FICHA']*fator_telhados[risco])
+            dados_risco_telhados = dados_risco_telhados.groupby(["CLASS_AREA"]).sum().reset_index()
+        dados_risco_telhados.drop('ORIGEM', axis=1, inplace=True)
+        dados_risco_moradias = pd.concat([dados_risco_moradias, dados_risco_telhados]).groupby('CLASS_AREA').sum().reset_index()
     dados_risco_moradias.columns = ['Risco','Quantidade de Moradias']
     dados_risco_moradias = pd.merge(dados_risco_moradias, colours, left_on='Risco', right_index=True)
 
     # Get data for Moradias x Setor
-    dados_setor_moradias = dados_fichas_uma_area.groupby(["SETOR"]).count()['ID_FICHA'].reset_index()
+    dados_setor_moradias = dados_fichas_uma_area.groupby(["SETOR"]).count()['ID_FICHA'].reset_index() # mudar para todas as fichas
+    
+    if not telhados.empty:
+        dados_setor_telhados = telhados.groupby(["SETOR", "ORIGEM"]).count()['ID_FICHA'].reset_index()
+        for setor in dados_setor_telhados['SETOR']:
+            idx_fdte = dados_setor_telhados.index[(dados_setor_telhados['SETOR'] == setor) & (dados_setor_telhados['ORIGEM'] == 'FDTE')]
+            if len(idx_fdte) > 0:
+                dados_setor_telhados.at[idx_fdte[0], 'ID_FICHA'] = round(dados_setor_telhados.at[idx_fdte[0], 'ID_FICHA']*fator_telhados[risco])
+            dados_setor_telhados = dados_setor_telhados.groupby(["SETOR"]).sum().reset_index()
+        dados_setor_telhados.drop('ORIGEM', axis=1, inplace=True)
+        dados_setor_moradias = pd.concat([dados_setor_moradias, dados_setor_telhados]).groupby('SETOR').sum().reset_index()
     dados_setor_moradias.columns = ['Setor','Quantidade de Moradias']
     
     # Get data for Moradores x Setor
     dados_setor_moradores = get_moradores_setor(dados_fichas_uma_area).reset_index()
+    if not telhados.empty:
+        moradores_setor_telhados = pd.DataFrame()
+        moradores_setor_telhados['index'] = dados_setor_telhados['SETOR']
+        moradores_setor_telhados[0] = round(dados_setor_telhados*mediar3r4)['ID_FICHA']
+        dados_setor_moradores = pd.concat([dados_setor_moradores, moradores_setor_telhados]).groupby('index').sum().reset_index()
     dados_setor_moradores.columns = ['Setor','Quantidade de Moradores']
+    
+    # Get data for Moradores x Risco
+    if not telhados.empty:
+        if 'R1' in dados_risco_telhados['CLASS_AREA'].values:
+            risco_df_moradores['R1'] = round(dados_risco_telhados.set_index('CLASS_AREA').loc['R1']*mediar3r4).values[0]
+        if 'R2' in dados_risco_telhados['CLASS_AREA'].values:
+            risco_df_moradores['R2'] = round(dados_risco_telhados.set_index('CLASS_AREA').loc['R2']*mediar3r4).values[0]
     
     # Get data for Uso dos Imóveis
     uso_csa = areas_fichas_casas_uma_area.groupby('USO_CSA', dropna=False)['ID_FICHA'].count()
@@ -246,31 +314,32 @@ def process_data(nome_area_risco, sigla_area):
     # OTHER DATA
     dados = {}
     
-    # Checando se precisa adicionar observação
-    graus = mapa_uma_area['RHD_GRAU'].unique()
-    graus_fichas = dados_fichas_uma_area['CLASS_AREA'].unique()
-    if len(graus) != len(graus_fichas):
-        obs = 'Levantamento demográfico realizado apenas para setores R3 e R4'
+    # # Checando se precisa adicionar observação
+    # graus = mapa_uma_area['RHD_GRAU'].unique()
+    # graus_fichas = dados_fichas_uma_area['CLASS_AREA'].unique()
+    # if len(graus) != len(graus_fichas):
+    #     obs = 'Levantamento demográfico realizado apenas para setores R3 e R4'
+    # else:
+    #     obs = '' 
+    if not telhados.empty:
+        text = ', para os setores R3 e R4,'
     else:
-        obs = ''
+        text=''
     
-    dados['obs_area'] = obs
+    dados['text_r3r4'] = text
+    dados['obs_area'] = ''
     dados['subprefeitura'] = mapa_uma_area.iat[0,10]
     dados['hierarquia_area'] = int(mapa_uma_area.iat[0,9])
     dados['data_censo_inicial'] = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).min().date().strftime('%d/%m/%Y') # ver de onde pegar esse
     dados['data_censo_final'] = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).max().date().strftime('%d/%m/%Y') # ver de onde pegar esse
-
-    dados['moradias_fdte'] = dados_fichas_uma_area['ID_FICHA'].count()
-    dados['moradias_defesa'] = mapa_uma_area['N_MORADIAS'].iat[0]
     moradias_r1 = get_moradias(dados_risco_moradias, 'R1')
     moradias_r2 = get_moradias(dados_risco_moradias, 'R2')
     moradias_r3 = get_moradias(dados_risco_moradias, 'R3')
     moradias_r4 = get_moradias(dados_risco_moradias, 'R4')
-    moradores_r1 = get_moradores_grau(dados_fichas_uma_area, 'R1')
-    moradores_r2 = get_moradores_grau(dados_fichas_uma_area, 'R2')
-    moradores_r3 = get_moradores_grau(dados_fichas_uma_area, 'R3')
-    moradores_r4 = get_moradores_grau(dados_fichas_uma_area, 'R4')
-    dados['total_moradores'] = moradores_r1+moradores_r2+moradores_r3+moradores_r4
+    dados['moradias_fdte'] = dados_setor_moradias['Quantidade de Moradias'].sum()
+    dados['moradias_defesa'] = mapa_uma_area['N_MORADIAS'].iat[0]
+    dados['total_moradores_1'] = moradores_r1+moradores_r2+moradores_r3+moradores_r4
+    dados['total_moradores_2'] = dados_setor_moradores['Quantidade de Moradores'].sum()
     dados['total_familias'] = get_familias(dados_fichas_uma_area)
     dados['total_criancas'] = dados_fichas_uma_area['CRIANCA_CSA'].sum()
     dados['total_idosos'] = dados_fichas_uma_area['IDOSO_CSA'].sum()
@@ -281,7 +350,6 @@ def process_data(nome_area_risco, sigla_area):
     ## Gerando tabela com numero de moradores e moradias em cada risco
 
     risco_df_moradias = {'R1': moradias_r1,'R2': moradias_r2,'R3': moradias_r3,'R4': moradias_r4}
-    risco_df_moradores = {'R1': moradores_r1,'R2': moradores_r2,'R3': moradores_r3,'R4': moradores_r4}
     dados['risco_df'] = pd.DataFrame({'Moradias': risco_df_moradias, 'Habitantes': risco_df_moradores})
 
     # Generating text data
@@ -307,9 +375,16 @@ def process_data(nome_area_risco, sigla_area):
     telhado_csa_maioria = ' e '.join(select_categories(telhado_csa)).lower()
 
     cols = [c for c in acab_csa.index if not pd.isnull(c) and 'REVESTIDO' in c]
-    acab_csa_percent = acab_csa[cols].iat[0]/acab_csa.sum()
+    if len(cols) == 0:
+        acab_csa_percent = 0
+    else:
+        acab_csa_percent = acab_csa[cols].iat[0]/acab_csa.sum()
+    
     cols = [c for c in piso_csa.index if not pd.isnull(c) and 'REVESTIDO' in c]
-    piso_csa_percent = piso_csa[cols].iat[0]/piso_csa.sum()
+    if len(cols) == 0:
+        piso_csa_percent = 0
+    else:
+        piso_csa_percent = piso_csa[cols].iat[0]/piso_csa.sum()
     casa_revestidas = (acab_csa_percent+piso_csa_percent)*100/2
 
     probl_csa_sim = probl_csa['SIM']/probl_csa.sum()*100
@@ -317,7 +392,7 @@ def process_data(nome_area_risco, sigla_area):
     dados['texto_carac_area'] = f"Trata-se de uma área com {numeros[len(dados_risco_moradias)-1]} \
                         classificações de risco ({nome_riscos}), \
                         localizada na subprefeitura {dados['subprefeitura']}. \
-                        Possui uma média de {(dados['total_moradores']/dados['total_familias']):.0f} pessoas por família. \
+                        Possui uma média de {(dados['total_moradores_1']/dados['total_familias']):.0f} pessoas por família. \
                         O número de moradias da área {sign_change_moradias} quando comparado aos relatórios da Defesa Civil.\
                         Os imóveis são em maioria de uso {uso_csa_maioria} de {n_pav_maioria} {palavra}, \
                         feitos de {tipo_csa_maioria} com cobertura de {telhado_csa_maioria} \
