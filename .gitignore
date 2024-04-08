@@ -3,3 +3,4 @@ data/
 __pycache__
 env/
 src/rel_a_fazer.py
+error.txt
