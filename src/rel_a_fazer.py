@@ -1,26 +1,24 @@
 rel_a_fazer = {
     
-    # 'Jova Rural II': 'JT-01', # R3/R4
-    # 'Alfredo Ávila': 'JT-07', # R3/R4
-    # 'Flor de Lis': 'FO-05', # R3/R4
-    # 'Bentureli': 'MG-02', # R3/R4
-    # 'Vila do Sapo': 'MG-03', # R3/R4
-    # 'Jardim Evana - Santa Efigênia': 'CL-04', # R3/R4
+    'Jova Rural II': 'JT-01', # R3/R4
+    'Alfredo Ávila': 'JT-07', # R3/R4
+    'Flor de Lis': 'FO-05', # R3/R4
+    'Bentureli': 'MG-02', # R3/R4
+    'Vila do Sapo': 'MG-03', # R3/R4
+    'Jardim Evana - Santa Efigênia': 'CL-04', # R3/R4
     'Jardim Umuarama I': 'CL-05', # R3/R4
-    # 'Florista': 'G-08', # R3/R4
-    # 'Parque Fernanda': 'CL-06', # R3/R4
-    # 'Parque Europa': 'MB-06', # R3/R4
-    # 'Sítio Paiolzinho I': 'CT-10', # R3/R4
-    # 'Parque São José V': 'CS-10', # R3/R4
-    # 'Recanto Verde II': 'SM-05', # R3/R4
-    # 'Jardim Nakamura': 'MB-35', # R3/R4
-    # 'Favela Viela Cinco': 'CL-34', # R3/R4
-    # 'Jardim Colonial': 'SM-04', # R3/R4
-    # 'Jardim Mitsutani': 'CL-07', # R3/R4
-    # 'Jardim Etelvina': 'G-15',
-
-    
-    
+    'Florista': 'G-08', # R3/R4
+    'Parque Fernanda': 'CL-06', # R3/R4
+    'Parque Europa': 'MB-06', # R3/R4
+    'Sítio Paiolzinho I': 'CT-10', # R3/R4
+    'Parque São José V': 'CS-10', # R3/R4
+    'Recanto Verde II': 'SM-05', # R3/R4
+    'Jardim Nakamura': 'MB-35', # R3/R4
+    'Favela Viela Cinco': 'CL-34', # R3/R4
+    'Jardim Colonial': 'SM-04', # R3/R4
+    'Jardim Mitsutani': 'CL-07', # R3/R4
+    'Jardim Etelvina': 'G-15',
+    'Parque Brasilândia B': 'FO-26', # R3/R4
     
     # 'Nossa Senhora da Assunção': 'BT-17', # Arrumar setores
     # 'Ponta da Praia': 'BT-25', # Arrumar setores
@@ -29,7 +27,6 @@ rel_a_fazer = {
     
     # 'Córrego Pedreiras': 'AD-26',
     # 'Nossa Senhora da Fonte': 'G-17',
-    # 'Parque Brasilândia B': 'FO-26', # R3/R4
     # 'Itaberaba I':'PR-11',
     # 'Jardim das Rosas': 'CL-28',
     # 'Beija - Flor': 'HPR-04',
@@ -42,10 +39,7 @@ rel_a_fazer = {
     # 'Jardim Selma': 'HAD-23',
     # 'Vilma Flor': 'CT-05', #/ 'HCT-01'
     # 'Fazenda da Juta': 'SB-05',
-    # 'Jova Rural II': 'JT-01', # R3/R4
     # 'Jardim Miriam': 'AD-19',
-    # 'Alfredo Avila': 'JT-07', # R3/R4
-    # 'Flor de Lis': 'FO-05', # R3/R4
     # 'Jardim São Paulo II': 'G-05',
     # 'Jardim Aurora IV':'G-04',
 
