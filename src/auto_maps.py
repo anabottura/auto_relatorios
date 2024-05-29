@@ -58,46 +58,47 @@ def plot_markers_in_map(map, geometria_fichas, inside_icon='home'):
         svg_style = '<style>svg#legend {font-size: 14px; background-color: white;}</style>'
         # map.get_root().html.add_child(folium.Element(svg_style))
         # cmap.add_to(map)
-        
+    
     for _, r in geometria_fichas.iterrows():
         
-        icons = {'child': 'child',
-                 'old': 'person-cane',
-                 'probl': 'triangle-exclamation',
-                 'acab': 'star',
-                 'pav': 'building',
-                 'pcd': 'wheelchair'}
-        
-        # .YlGn.to_step(9).scale(geometria_fichas['NPVTO_CSA'].min(), geometria_fichas['NPVTO_CSA'].max())
-        
-        cor=r['COR']
-        if inside_icon == 'home':
-            home_icon = f'<i class="fa fa-{inside_icon}" aria-hidden="true" style="position:absolute; color:white; font-size:20px; padding:0; margin:0;top:3px;left:3px"></i>'
-            set_icon = 'map-marker'
-        elif inside_icon == 'pav':
-            cor = cmap(r['NPVTO_CSA'])
-            home_icon = ''
-            set_icon = icons[inside_icon]
-        else:
-            home_icon = ''
-            set_icon = icons[inside_icon]
+        if not r['latlong'].is_empty:
+            icons = {'child': 'child',
+                    'old': 'person-cane',
+                    'probl': 'triangle-exclamation',
+                    'acab': 'star',
+                    'pav': 'building',
+                    'pcd': 'wheelchair'}
             
-        marker_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:40px; color:{cor};">{home_icon}</i>'
-        outline_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:45px; color:black;"></i>'
-        # icon = plugins.BeautifyIcon(prefix='fa', icon="child", icon_shape="marker", background_color=cor, border=1, border_color='black')
-        divicon = folium.DivIcon(icon_anchor=(14,42), html=f'<div style="background-color: transparent; ">{marker_icon}</div>')
-        
-        
-        my_marker = folium.Marker(icon=divicon)
-        border_marker = folium.Marker(icon=folium.DivIcon(icon_anchor=(16,43), html=f'<div style="background-color: transparent; ">{outline_icon}</div>'))
-        
-        geo_j = folium.GeoJson(data=r['latlong'], marker=my_marker)
-        geo_j2 = folium.GeoJson(data=r['latlong'], marker=border_marker)
-        # folium.Marker(location=[r['GPS_LAT_FICHA'], r['GPS_LONG_FICHA']], icon=icon).add_to(my_map2)
-        # folium.Marker(location=[r['GPS_LAT_FICHA'], r['GPS_LONG_FICHA']], icon=divicon).add_to(my_map2)
-        
-        geo_j2.add_to(map)
-        geo_j.add_to(map)
+            # .YlGn.to_step(9).scale(geometria_fichas['NPVTO_CSA'].min(), geometria_fichas['NPVTO_CSA'].max())
+            
+            cor=r['COR']
+            if inside_icon == 'home':
+                home_icon = f'<i class="fa fa-{inside_icon}" aria-hidden="true" style="position:absolute; color:white; font-size:20px; padding:0; margin:0;top:3px;left:3px"></i>'
+                set_icon = 'map-marker'
+            elif inside_icon == 'pav':
+                cor = cmap(r['NPVTO_CSA'])
+                home_icon = ''
+                set_icon = icons[inside_icon]
+            else:
+                home_icon = ''
+                set_icon = icons[inside_icon]
+                
+            marker_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:40px; color:{cor};">{home_icon}</i>'
+            outline_icon = f'<i class="fa fa-{set_icon}" style="position:relative; font-size:45px; color:black;"></i>'
+            # icon = plugins.BeautifyIcon(prefix='fa', icon="child", icon_shape="marker", background_color=cor, border=1, border_color='black')
+            divicon = folium.DivIcon(icon_anchor=(14,42), html=f'<div style="background-color: transparent; ">{marker_icon}</div>')
+            
+            
+            my_marker = folium.Marker(icon=divicon)
+            border_marker = folium.Marker(icon=folium.DivIcon(icon_anchor=(16,43), html=f'<div style="background-color: transparent; ">{outline_icon}</div>'))
+            
+            geo_j = folium.GeoJson(data=r['latlong'], marker=my_marker)
+            geo_j2 = folium.GeoJson(data=r['latlong'], marker=border_marker)
+            # folium.Marker(location=[r['GPS_LAT_FICHA'], r['GPS_LONG_FICHA']], icon=icon).add_to(my_map2)
+            # folium.Marker(location=[r['GPS_LAT_FICHA'], r['GPS_LONG_FICHA']], icon=divicon).add_to(my_map2)
+            
+            geo_j2.add_to(map)
+            geo_j.add_to(map)
 
 def create_latlong_col(df, lat_col='GPS_LAT_FICHA', long_col='GPS_LONG_FICHA'):
     

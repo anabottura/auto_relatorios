@@ -2,7 +2,7 @@ import htmltools as ht
 from datetime import date
 
 def create_header_table(nome_area, sigla_area, sp_logo):
-    # Criação da tabela do header
+    # Criação da tabela do headerconda 
 
     table_header = ht.tags.table(id='id_table_header',style=("height:40mm; width:180mm; margin-left:auto; margin-right:auto"))
     

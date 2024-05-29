@@ -122,17 +122,18 @@ def graph_n_pavimentos(dados, fig_path = 'pav_imoveis.png', regenerate=True):
     if not regenerate and os.path.exists(fig_path):
         return fig_path
     
-    # Moradias x Setor
-    fig = plt.Figure(figsize=(10,5))
-    ax = sns.barplot(dados, x='Número de pavimentos', y='Quantidade de Moradias')
-    ax.set_title('Quantidade de pavimentos')
-    # ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-    ax.set_xticklabels([f'{num:.0f}' for num in dados['Número de pavimentos'][:-1]]+[dados['Número de pavimentos'].values[-1]])
-    # plt.xticks(rotation = 45, horizontalalignment='right')
-    add_bar_labels(ax, dados['Quantidade de Moradias'])
-    plt.tight_layout()
-    ax.get_figure().savefig(fig_path, bbox_inches='tight')
-    plt.close(ax.get_figure())
+    if not dados.empty:
+        # Moradias x Setor
+        fig = plt.Figure(figsize=(10,5))
+        ax = sns.barplot(dados, x='Número de pavimentos', y='Quantidade de Moradias')
+        ax.set_title('Quantidade de pavimentos')
+        # ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        ax.set_xticklabels([f'{num:.0f}' for num in dados['Número de pavimentos'][:-1]]+[dados['Número de pavimentos'].values[-1]])
+        # plt.xticks(rotation = 45, horizontalalignment='right')
+        add_bar_labels(ax, dados['Quantidade de Moradias'])
+        plt.tight_layout()
+        ax.get_figure().savefig(fig_path, bbox_inches='tight')
+        plt.close(ax.get_figure())
     
     return fig_path
 
@@ -140,13 +141,13 @@ def graph_percentages(dados, graph_title, fig_path, regenerate=True):
     
     if not regenerate and os.path.exists(fig_path):
         return fig_path
-    
-    fig = plt.Figure(figsize=(10,5))
-    fig, ax = generate_donut_graph(dados)
-    ax.set_title(graph_title, position=(0.8, 1))
-    plt.tight_layout()
-    ax.get_figure().savefig(fig_path, bbox_inches='tight')
-    plt.close(ax.get_figure())
+    if not dados.empty:
+        fig = plt.Figure(figsize=(10,5))
+        fig, ax = generate_donut_graph(dados)
+        ax.set_title(graph_title, position=(0.8, 1))
+        plt.tight_layout()
+        ax.get_figure().savefig(fig_path, bbox_inches='tight')
+        plt.close(ax.get_figure())
     
     return fig_path
 

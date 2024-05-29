@@ -406,8 +406,10 @@ def pdf_doc(arquivos, pdf_file):
 if __name__ == '__main__':
     
     # fixed images
-    logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
-    logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    # logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    logo_fdte = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    # logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    logo_sp = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_sp.png'
     
     for nome_area_risco, sigla_area in rel_a_fazer.items():
     # nome_area_risco = 'Jardim Etelvina' #'Morro da Lua' 
@@ -417,7 +419,8 @@ if __name__ == '__main__':
 
         # path to save pdf
         # pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
-        pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+        pdf_file = f'/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+        # pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
         
         mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
         if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
