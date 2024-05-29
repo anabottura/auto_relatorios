@@ -1,24 +1,59 @@
 rel_a_fazer = {
     
-    'Jova Rural II': 'JT-01', # R3/R4
-    'Alfredo Ávila': 'JT-07', # R3/R4
-    'Flor de Lis': 'FO-05', # R3/R4
-    'Bentureli': 'MG-02', # R3/R4
-    'Vila do Sapo': 'MG-03', # R3/R4
-    'Jardim Evana - Santa Efigênia': 'CL-04', # R3/R4
-    'Jardim Umuarama I': 'CL-05', # R3/R4
-    'Florista': 'G-08', # R3/R4
-    'Parque Fernanda': 'CL-06', # R3/R4
-    'Parque Europa': 'MB-06', # R3/R4
-    'Sítio Paiolzinho I': 'CT-10', # R3/R4
-    'Parque São José V': 'CS-10', # R3/R4
-    'Recanto Verde II': 'SM-05', # R3/R4
-    'Jardim Nakamura': 'MB-35', # R3/R4
-    'Favela Viela Cinco': 'CL-34', # R3/R4
-    'Jardim Colonial': 'SM-04', # R3/R4
-    'Jardim Mitsutani': 'CL-07', # R3/R4
-    'Jardim Etelvina': 'G-15',
-    'Parque Brasilândia B': 'FO-26', # R3/R4
+    # VILA AROUCA (JT-15
+    # PARQUE SANTA AMELIA (IT-10
+    # PARQUE SANTA MADALENA I (SB-01
+    # CORREGO ENGENHO (CL-37
+    # JARDIM PLANALTO (SB-03
+    # PARQUE SANTA AMELIA (HAD-09
+    # IGARAPE PRIMAVERA (JT-19
+    # MORUMBIZINHO (BT-15
+    # VILA PROGRESSO (MP-03
+    # CONDESSA AMALIA MATARAZZO (CV-03
+    # JARDIM RINCAO I (HPJ-04
+    # JARDIM VITORIA REGIA (FO-35
+    # SEVILHA (VP-01
+    # VILA AYROSA (JT-08
+    # LIMOEIRO (MP-01
+    # ROCINHA (SA-02
+    # CHAGOTEO (IT-07
+    # MAURO (HVM-01
+    # BARROCA (PE-04
+    # PARQUE SANTA MADALENA I (SB-01       
+    
+    # 'Vila Santa Lúcia': 'MB-58'
+    
+    # 'Parque Santa Madalena I': 'SB-01',
+    # 'Rômulo Naldi I': 'FO-18',
+    # 'Vila Prudente': 'HVP-02',
+    'Erundina': 'MB-14',
+    # 'Maria Luiza Americano': 'IQ-05',
+    # 'Jardim Varginha': 'CS-14',
+    # 'Mungo Park': 'EM-02',
+    # 'Tuparoquera': 'MB-40',
+    # 'Paraisópolis II': 'HCL-02',
+    # 'Florista': 'G-08',
+    # 'Jardim Mitsutani': 'CL-01'
+    
+    # 'Jova Rural II': 'JT-01', # R3/R4
+    # 'Alfredo Ávila': 'JT-07', # R3/R4
+    # 'Flor de Lis': 'FO-05', # R3/R4
+    # 'Bentureli': 'MG-02', # R3/R4
+    # 'Vila do Sapo': 'MG-03', # R3/R4
+    # 'Jardim Evana - Santa Efigênia': 'CL-04', # R3/R4
+    # 'Jardim Umuarama I': 'CL-05', # R3/R4
+    # 'Florista': 'G-08', # R3/R4
+    # 'Parque Fernanda': 'CL-06', # R3/R4
+    # 'Parque Europa': 'MB-06', # R3/R4
+    # 'Sítio Paiolzinho I': 'CT-10', # R3/R4
+    # 'Parque São José V': 'CS-10', # R3/R4
+    # 'Recanto Verde II': 'SM-05', # R3/R4
+    # 'Jardim Nakamura': 'MB-35', # R3/R4
+    # 'Favela Viela Cinco': 'CL-34', # R3/R4
+    # 'Jardim Colonial': 'SM-04', # R3/R4
+    # 'Jardim Mitsutani': 'CL-07', # R3/R4
+    # 'Jardim Etelvina': 'G-15',
+    # 'Parque Brasilândia B': 'FO-26', # R3/R4
     
     # 'Nossa Senhora da Assunção': 'BT-17', # Arrumar setores
     # 'Ponta da Praia': 'BT-25', # Arrumar setores

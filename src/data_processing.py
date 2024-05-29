@@ -56,7 +56,7 @@ def process_data(nome_area_risco, sigla_area):
     if telhados.empty:
         print("Dados de estimativa de telhados não encontrados no sistema.")
     else:
-        telhados.columns = ['ID_FICHA', 'RHD_NOME', 'RHD_SIGLA', 'SETOR', 'CLASS_AREA', 'GPS_LAT_FICHA', 'GPS_LONG_FICHA', 'ORIGEM']
+        telhados.columns = ['ID_FICHA', 'RHD_NOME', 'RHD_SIGLA', 'SETOR', 'CLASS_AREA', 'GPS_LAT_FICHA', 'GPS_LONG_FICHA', 'ORIGEM', 'TIPO']
         telhados['CLASS_AREA'] = telhados['CLASS_AREA'].str.upper()
         telhados['ID_FICHA'] = telhados['ID_FICHA'] + 10000000 # pode ser que precise mudar
     
