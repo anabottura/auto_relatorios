@@ -28,7 +28,7 @@ rel_a_fazer = {
     # 'Vila Prudente': 'HVP-02',
     'Erundina': 'MB-14',
     # 'Maria Luiza Americano': 'IQ-05',
-    # 'Jardim Varginha': 'CS-14',
+    # 'Jardim Varginha I': 'CS-14',
     # 'Mungo Park': 'EM-02',
     # 'Tuparoquera': 'MB-40',
     # 'Paraisópolis II': 'HCL-02',
@@ -36,7 +36,7 @@ rel_a_fazer = {
     # 'Jardim Mitsutani': 'CL-01'
     
     # 'Jova Rural II': 'JT-01', # R3/R4
-    # 'Alfredo Ávila': 'JT-07', # R3/R4
+    'Alfredo Ávila': 'JT-07', # R3/R4
     # 'Flor de Lis': 'FO-05', # R3/R4
     # 'Bentureli': 'MG-02', # R3/R4
     # 'Vila do Sapo': 'MG-03', # R3/R4
@@ -59,8 +59,8 @@ rel_a_fazer = {
     # 'Ponta da Praia': 'BT-25', # Arrumar setores
     # 'Simão de Miranda': 'CL-38', # Arrumar setores
     # 'Felicidade': 'MB-13', # Arrumar setores
-    
-    # 'Córrego Pedreiras': 'AD-26',
+    'Agáve - Dragão': 'SB-12',
+    'Córrego Pedreiras': 'AD-26',
     # 'Nossa Senhora da Fonte': 'G-17',
     # 'Itaberaba I':'PR-11',
     # 'Jardim das Rosas': 'CL-28',

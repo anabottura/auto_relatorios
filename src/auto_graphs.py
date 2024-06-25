@@ -134,6 +134,8 @@ def graph_n_pavimentos(dados, fig_path = 'pav_imoveis.png', regenerate=True):
         plt.tight_layout()
         ax.get_figure().savefig(fig_path, bbox_inches='tight')
         plt.close(ax.get_figure())
+    else:
+        fig_path = '/pav_imoveis.png'
     
     return fig_path
 
@@ -148,6 +150,8 @@ def graph_percentages(dados, graph_title, fig_path, regenerate=True):
         plt.tight_layout()
         ax.get_figure().savefig(fig_path, bbox_inches='tight')
         plt.close(ax.get_figure())
+    else:
+        fig_path = '/img_per.png'
     
     return fig_path
 

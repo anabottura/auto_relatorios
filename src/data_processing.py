@@ -34,6 +34,9 @@ def process_data(nome_area_risco, sigla_area):
     gerar_graficos = True
     gerar_mapas = True
     
+    sem_dados_area = False
+    sem_dados_telhado = False
+    
     # Data to receive from appex
 
     url_area = f'https://uzu2spnwitelgca-db202004101957.adb.sa-saopaulo-1.oraclecloudapps.com/ords/areas_risco/Relatorios_dem/area?nome_var={nome_area}&sigla_var={sigla_area}'
@@ -51,10 +54,11 @@ def process_data(nome_area_risco, sigla_area):
     dados = {}
     
     if mapa_uma_area.empty | dados_fichas_uma_area.empty:
-        print("Dados não encontrados no sistema para geração do relatório.")
+        print("Fichas ou dados da área não encontrados no sistema. Tentando gerar relatório com outros dados.")
         dados['data_censo_inicial'] = ''
         dados['data_censo_final'] = ''
         dados['fichas_sem_id'] = 0
+        sem_dados_area = True
     else:
         dados['data_censo_inicial'] = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).min().date().strftime('%d/%m/%Y') 
         dados['data_censo_final'] = pd.to_datetime(dados_fichas_uma_area['DT_FICHA_DATE']).max().date().strftime('%d/%m/%Y')
@@ -62,16 +66,21 @@ def process_data(nome_area_risco, sigla_area):
                     dados_fichas_uma_area['ID_CSA_FICHA'].isna().sum()
     
     if telhados.empty:
-        print("Dados de estimativa de telhados não encontrados no sistema.")
+        print("Dados de estimativa de telhados não encontrados no sistema. Tentando gerar relatório com outros dados.")
+        sem_dados_telhado = True
     else:
         telhados.columns = ['ID_FICHA', 'RHD_NOME', 'RHD_SIGLA', 'SETOR', 'CLASS_AREA', 'GPS_LAT_FICHA', 'GPS_LONG_FICHA', 'ORIGEM', 'TIPO']
         telhados['CLASS_AREA'] = telhados['CLASS_AREA'].str.upper()
         telhados['ID_FICHA'] = telhados['ID_FICHA'] + 10000000 # pode ser que precise mudar
     
     
+    if sem_dados_telhado & sem_dados_area:
+        print("Não há dados disponíveis para geração do relatório da área")
+        return (sem_dados_area,sem_dados_telhado), {}, {}, {}
+    
     # path to save images
-    # save_images = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images'
-    save_images = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images'
+    save_images = '/Users/anabottura/Projects/FDTE/auto_relatorios/data/html_outputs/images'
+    # save_images = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images'
 
     colours = pd.Series({'R1':'#4FC26A','R2':'#F0E113','R3':'#FF8801','R4':'#BF243C'})
     colours.name = 'colours'
@@ -297,4 +306,4 @@ def process_data(nome_area_risco, sigla_area):
                             Possui uma média de {(dados['total_moradores_2']/dados['total_familias']):.0f} pessoas por família. \
                             O número de moradias da área {sign_change_moradias} quando comparado aos relatórios da Defesa Civil."
     
-    return mapas, graficos, dados
+    return (sem_dados_area,sem_dados_telhado), mapas, graficos, dados

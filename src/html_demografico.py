@@ -143,7 +143,7 @@ def generate_p1(nome_area, sigla_area, subprefeitura, hierarquia, data_censo_ini
                                  ht.tags.p(ht.tags.strong("Sigla: "), f"{sigla_area}", class_='texto_geral'),
                                  ht.tags.p(ht.tags.strong("Subprefeitura: "), f"{subprefeitura}", class_='texto_geral'),
                                  ht.tags.p(ht.tags.strong("Hierarquia: "), f"{hierarquia}", class_='texto_geral'),
-                                 ht.tags.p(ht.tags.strong("Data do censo: "), f"{data_censo_inicial} a {data_censo_final}", class_='texto_geral'),
+                                 ht.tags.p(ht.tags.strong("Data de acesso aos dados: 11/05/2024"), class_='texto_geral'), #f"{data_censo_inicial} a {data_censo_final}", class_='texto_geral'),
                                  style='text-align:right; width:180mm; padding: 0; margin:0; ')
     
     ordered_sections = ht.tags.ol(style='width:180mm; padding: 0 0 0 5mm; margin: 0')
@@ -358,17 +358,17 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
     graphs_p7 = {"Problemas estruturais": graficos['problemas']}
     
     conteudo.append(generate_p3(graphs_p3))
-    conteudo.append(generate_p4(graphs_p4))
-    conteudo.append(generate_p4(graphs_p5, subitem=5))
-    conteudo.append(generate_p4(graphs_p6, subitem=7))
+    # conteudo.append(generate_p4(graphs_p4))
+    # conteudo.append(generate_p4(graphs_p5, subitem=5))
+    # conteudo.append(generate_p4(graphs_p6, subitem=7))
     
     maps_p7 = {"Problemas estruturais": mapas['problemas']}
     maps_p8 = {"Crianças": mapas['criancas'], "Idosos": mapas['idosos']}
     maps_p9 = {"PCDs": mapas['pcds']}
     
-    conteudo.append(generate_p5(graphs_p7, maps_p7, start_item=7, subitem=9, title = 'Espacialização dos indicadores'))
-    conteudo.append(generate_p4(maps_p8, start_item=7, subitem=2))
-    conteudo.append(generate_p4(maps_p9, start_item=7, subitem=4))
+    # conteudo.append(generate_p5(graphs_p7, maps_p7, start_item=7, subitem=9, title = 'Espacialização dos indicadores'))
+    # conteudo.append(generate_p4(maps_p8, start_item=7, subitem=2))
+    # conteudo.append(generate_p4(maps_p9, start_item=7, subitem=4))
     
     arquivos_html = []
     arquivos_txt = ''
@@ -406,10 +406,10 @@ def pdf_doc(arquivos, pdf_file):
 if __name__ == '__main__':
     
     # fixed images
-    # logo_fdte = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
-    logo_fdte = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_fdte.png'
-    # logo_sp = '/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
-    logo_sp = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    logo_fdte = '/Users/anabottura/Projects/FDTE/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    # logo_fdte = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_fdte.png'
+    logo_sp = '/Users/anabottura/Projects/FDTE/auto_relatorios/data/html_outputs/images/logo_sp.png'
+    # logo_sp = '/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/images/logo_sp.png'
     
     for nome_area_risco, sigla_area in rel_a_fazer.items():
     # nome_area_risco = 'Jardim Etelvina' #'Morro da Lua' 
@@ -419,12 +419,15 @@ if __name__ == '__main__':
 
         # path to save pdf
         # pdf_file = f'rest/public_api/api/pmrr/relatorios/demografico/finalizados/{nome_area}_{sigla_area}.pdf'
-        pdf_file = f'/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
-        # pdf_file = f'/Users/anabottura/PycharmProjects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+        # pdf_file = f'/Users/anacarolinabotturabarros/PycharmProjects/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
+        pdf_file = f'/Users/anabottura/Projects/FDTE/auto_relatorios/data/html_outputs/{nome_area}_{sigla_area}.pdf'
         
-        mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
-        if len(mapas) == 0 | len(graficos) == 0 | len(dados) == 0:
+        tags, mapas, graficos, dados = process_data(nome_area_risco, sigla_area)
+        if tags[0] and tags[1]:
             print(f'Não foi possível gerar relatório para {nome_area}')
+            continue
+        
+        print(tags)
         
         html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
         gerado = pdf_doc(html_txt, pdf_file)
