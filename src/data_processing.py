@@ -29,7 +29,7 @@ def process_data(nome_area_risco, sigla_area):
 
     nome_area = unidecode(nome_area_risco.upper())
     
-    fator_telhados = {'R1':2.05, 'R2':1.55, 'R3':1.0, 'R4':1.0}
+    # fator_telhados = {'R1':2.05, 'R2':1.55, 'R3':1.0, 'R4':1.0}
     
     gerar_graficos = True
     gerar_mapas = True
@@ -108,6 +108,7 @@ def process_data(nome_area_risco, sigla_area):
         df_area = dados_fichas_uma_area
         df_criancas_area = df_area[(~df_area['CRIANCA_CSA'].isna()) & (df_area['CRIANCA_CSA']!=0)]
         geometria_criancas = df_criancas_area.merge(new_gdf[['COR', 'RHD_SETOR']], left_on='SETOR', right_on='RHD_SETOR')
+        
         # Idosos
         df_idoso_area = df_area[(~df_area['IDOSO_CSA'].isna()) & (df_area['IDOSO_CSA']!=0)]
         geometria_idoso = df_idoso_area.merge(new_gdf[['COR', 'RHD_SETOR']], left_on='SETOR', right_on='RHD_SETOR')

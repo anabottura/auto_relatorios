@@ -307,7 +307,7 @@ def checar_doc(pdf_file):
 
 # Gerando documentos
 
-def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados):
+def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados, tag):
     """
     Função que gera o arquivo html
     """
@@ -358,17 +358,19 @@ def gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, 
     graphs_p7 = {"Problemas estruturais": graficos['problemas']}
     
     conteudo.append(generate_p3(graphs_p3))
-    # conteudo.append(generate_p4(graphs_p4))
-    # conteudo.append(generate_p4(graphs_p5, subitem=5))
-    # conteudo.append(generate_p4(graphs_p6, subitem=7))
     
     maps_p7 = {"Problemas estruturais": mapas['problemas']}
     maps_p8 = {"Crianças": mapas['criancas'], "Idosos": mapas['idosos']}
     maps_p9 = {"PCDs": mapas['pcds']}
     
-    # conteudo.append(generate_p5(graphs_p7, maps_p7, start_item=7, subitem=9, title = 'Espacialização dos indicadores'))
-    # conteudo.append(generate_p4(maps_p8, start_item=7, subitem=2))
-    # conteudo.append(generate_p4(maps_p9, start_item=7, subitem=4))
+    if not tag:
+        conteudo.append(generate_p4(graphs_p4))
+        conteudo.append(generate_p4(graphs_p5, subitem=5))
+        conteudo.append(generate_p4(graphs_p6, subitem=7))
+    
+        conteudo.append(generate_p5(graphs_p7, maps_p7, start_item=7, subitem=9, title = 'Espacialização dos indicadores'))
+        conteudo.append(generate_p4(maps_p8, start_item=7, subitem=2))
+        conteudo.append(generate_p4(maps_p9, start_item=7, subitem=4))
     
     arquivos_html = []
     arquivos_txt = ''
@@ -429,7 +431,7 @@ if __name__ == '__main__':
         
         print(tags)
         
-        html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados)
+        html_files, html_txt = gerar_doc(nome_area_risco, sigla_area, logo_sp, logo_fdte, mapas, graficos, dados, tags[0])
         gerado = pdf_doc(html_txt, pdf_file)
         
         if gerado:
